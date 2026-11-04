@@ -279,16 +279,16 @@ fun DashboardScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 PastelMetricCard(
-                    label = "Acurácia",
-                    value = "88%",
-                    unit = "média",
+                    label = "Pacientes",
+                    value = state.totalActivePatients.toString(),
+                    unit = "ativos",
                     containerColor = MockupGreenCard,
                     modifier = Modifier.weight(1f)
                 )
                 PastelMetricCard(
                     label = "Planejadas",
                     value = state.plannedSessionsCount.toString(),
-                    unit = "metas",
+                    unit = "sessões",
                     containerColor = MockupCyanCard,
                     modifier = Modifier.weight(1f)
                 )
@@ -299,6 +299,34 @@ fun DashboardScreen(
                     containerColor = MockupPeachCard,
                     modifier = Modifier.weight(1f)
                 )
+            }
+        }
+
+        // 7.5 Clinical Quality Control & Pending Tasks Center
+        if (state.qualityAlerts.isNotEmpty()) {
+            item {
+                Text(
+                    text = "Central de Pendências Clínicas (${state.qualityAlerts.size})",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MockupTextDark
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    state.qualityAlerts.forEach { alert ->
+                        MockupListItem(
+                            title = alert.title,
+                            subtitle = alert.description,
+                            leadingText = "!",
+                            leadingBgColor = MockupYellowCard,
+                            leadingTextColor = MockupDarkPill,
+                            badgeText = alert.severity.displayName,
+                            onClick = {
+                                alert.patientId?.let { onNavigateToPatientDetail(it) }
+                            }
+                        )
+                    }
+                }
             }
         }
 

@@ -2,6 +2,8 @@ package com.healthcare.fonolab.feature.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.healthcare.fonolab.domain.manager.ClinicalQualityAlert
+import com.healthcare.fonolab.domain.manager.QualityControlManager
 import com.healthcare.fonolab.domain.patient.Patient
 import com.healthcare.fonolab.domain.patient.PatientFilter
 import com.healthcare.fonolab.domain.patient.PatientRepository
@@ -23,13 +25,15 @@ data class DashboardUiState(
     val activeSession: SessionWithDetails? = null,
     val recentSessions: List<TherapySession> = emptyList(),
     val recentPatients: List<Patient> = emptyList(),
+    val qualityAlerts: List<ClinicalQualityAlert> = emptyList(),
     val isLoading: Boolean = true
 )
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
-    private val sessionRepository: TherapySessionRepository
+    private val sessionRepository: TherapySessionRepository,
+    qualityControlManager: QualityControlManager
 ) : ViewModel() {
 
     val uiState: StateFlow<DashboardUiState> = combine(
@@ -40,8 +44,9 @@ class DashboardViewModel @Inject constructor(
         ) { active, completed, planned -> Triple(active, completed, planned) },
         sessionRepository.observeActiveSession(),
         sessionRepository.observeRecentSessions(5),
-        patientRepository.observePatients(PatientFilter(status = PatientStatus.ACTIVE))
-    ) { (activeCount, completedCount, plannedCount), activeSession, recentSessions, activePatients ->
+        patientRepository.observePatients(PatientFilter(status = PatientStatus.ACTIVE)),
+        qualityControlManager.observeClinicalAlerts()
+    ) { (activeCount, completedCount, plannedCount), activeSession, recentSessions, activePatients, alerts ->
         DashboardUiState(
             totalActivePatients = activeCount,
             completedSessionsCount = completedCount,
@@ -49,6 +54,7 @@ class DashboardViewModel @Inject constructor(
             activeSession = activeSession,
             recentSessions = recentSessions,
             recentPatients = activePatients.take(5),
+            qualityAlerts = alerts.take(4),
             isLoading = false
         )
     }.stateIn(
