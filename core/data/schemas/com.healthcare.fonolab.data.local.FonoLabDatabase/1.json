@@ -1,0 +1,808 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "054313b4502554931590fdd5320ce5d6",
+    "entities": [
+      {
+        "tableName": "patients",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `internal_code` TEXT NOT NULL, `full_name` TEXT NOT NULL, `birth_date` TEXT NOT NULL, `guardian_name` TEXT, `guardian_contact` TEXT, `follow_up_start_date` TEXT NOT NULL, `clinical_notes` TEXT NOT NULL, `status` TEXT NOT NULL, `is_demo` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "internalCode",
+            "columnName": "internal_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fullName",
+            "columnName": "full_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "birthDate",
+            "columnName": "birth_date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "guardianName",
+            "columnName": "guardian_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "guardianContact",
+            "columnName": "guardian_contact",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "followUpStartDate",
+            "columnName": "follow_up_start_date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clinicalNotes",
+            "columnName": "clinical_notes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDemo",
+            "columnName": "is_demo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_patients_full_name",
+            "unique": false,
+            "columnNames": [
+              "full_name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_patients_full_name` ON `${TABLE_NAME}` (`full_name`)"
+          },
+          {
+            "name": "index_patients_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_patients_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_patients_internal_code",
+            "unique": true,
+            "columnNames": [
+              "internal_code"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_patients_internal_code` ON `${TABLE_NAME}` (`internal_code`)"
+          }
+        ]
+      },
+      {
+        "tableName": "clinical_goals",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `patient_id` INTEGER NOT NULL, `clinical_area` TEXT NOT NULL, `custom_area_name` TEXT, `description` TEXT NOT NULL, `target_skill` TEXT NOT NULL, `target_stimulus` TEXT, `phoneme_position` TEXT, `initial_difficulty` TEXT NOT NULL, `target_accuracy_percentage` INTEGER, `mastery_criterion_description` TEXT, `clinical_notes` TEXT NOT NULL, `status` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, FOREIGN KEY(`patient_id`) REFERENCES `patients`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "patientId",
+            "columnName": "patient_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clinicalArea",
+            "columnName": "clinical_area",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "customAreaName",
+            "columnName": "custom_area_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetSkill",
+            "columnName": "target_skill",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetStimulus",
+            "columnName": "target_stimulus",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "phonemePosition",
+            "columnName": "phoneme_position",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "initialDifficulty",
+            "columnName": "initial_difficulty",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetAccuracyPercentage",
+            "columnName": "target_accuracy_percentage",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "masteryCriterionDescription",
+            "columnName": "mastery_criterion_description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "clinicalNotes",
+            "columnName": "clinical_notes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_clinical_goals_patient_id",
+            "unique": false,
+            "columnNames": [
+              "patient_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_clinical_goals_patient_id` ON `${TABLE_NAME}` (`patient_id`)"
+          },
+          {
+            "name": "index_clinical_goals_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_clinical_goals_status` ON `${TABLE_NAME}` (`status`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "patients",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "patient_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "therapy_sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `patient_id` INTEGER NOT NULL, `status` TEXT NOT NULL, `scheduled_at` INTEGER NOT NULL, `started_at` INTEGER, `ended_at` INTEGER, `duration_seconds` INTEGER NOT NULL, `clinical_notes` TEXT NOT NULL, `clinical_summary` TEXT NOT NULL, `is_demo` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, FOREIGN KEY(`patient_id`) REFERENCES `patients`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "patientId",
+            "columnName": "patient_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduledAt",
+            "columnName": "scheduled_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startedAt",
+            "columnName": "started_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "endedAt",
+            "columnName": "ended_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "durationSeconds",
+            "columnName": "duration_seconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clinicalNotes",
+            "columnName": "clinical_notes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clinicalSummary",
+            "columnName": "clinical_summary",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDemo",
+            "columnName": "is_demo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_therapy_sessions_patient_id",
+            "unique": false,
+            "columnNames": [
+              "patient_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_therapy_sessions_patient_id` ON `${TABLE_NAME}` (`patient_id`)"
+          },
+          {
+            "name": "index_therapy_sessions_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_therapy_sessions_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_therapy_sessions_scheduled_at",
+            "unique": false,
+            "columnNames": [
+              "scheduled_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_therapy_sessions_scheduled_at` ON `${TABLE_NAME}` (`scheduled_at`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "patients",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "patient_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "session_goal_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`session_id` INTEGER NOT NULL, `goal_id` INTEGER NOT NULL, PRIMARY KEY(`session_id`, `goal_id`), FOREIGN KEY(`session_id`) REFERENCES `therapy_sessions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`goal_id`) REFERENCES `clinical_goals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "goalId",
+            "columnName": "goal_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "session_id",
+            "goal_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_session_goal_cross_ref_session_id",
+            "unique": false,
+            "columnNames": [
+              "session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_session_goal_cross_ref_session_id` ON `${TABLE_NAME}` (`session_id`)"
+          },
+          {
+            "name": "index_session_goal_cross_ref_goal_id",
+            "unique": false,
+            "columnNames": [
+              "goal_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_session_goal_cross_ref_goal_id` ON `${TABLE_NAME}` (`goal_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "therapy_sessions",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "session_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "clinical_goals",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "goal_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "session_activities",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `session_id` INTEGER NOT NULL, `game_id` TEXT NOT NULL, `linked_goal_id` INTEGER, `configuration_json` TEXT NOT NULL, `state_snapshot_json` TEXT, `status` TEXT NOT NULL, `order_index` INTEGER NOT NULL, `started_at` INTEGER, `ended_at` INTEGER, FOREIGN KEY(`session_id`) REFERENCES `therapy_sessions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`linked_goal_id`) REFERENCES `clinical_goals`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gameId",
+            "columnName": "game_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "linkedGoalId",
+            "columnName": "linked_goal_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "configurationJson",
+            "columnName": "configuration_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stateSnapshotJson",
+            "columnName": "state_snapshot_json",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "order_index",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startedAt",
+            "columnName": "started_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "endedAt",
+            "columnName": "ended_at",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_session_activities_session_id",
+            "unique": false,
+            "columnNames": [
+              "session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_session_activities_session_id` ON `${TABLE_NAME}` (`session_id`)"
+          },
+          {
+            "name": "index_session_activities_linked_goal_id",
+            "unique": false,
+            "columnNames": [
+              "linked_goal_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_session_activities_linked_goal_id` ON `${TABLE_NAME}` (`linked_goal_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "therapy_sessions",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "session_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "clinical_goals",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "linked_goal_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "game_attempts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `activity_id` INTEGER NOT NULL, `round_index` INTEGER NOT NULL, `attempt_number` INTEGER NOT NULL, `stimulus_target` TEXT NOT NULL, `stimulus_presented_json` TEXT NOT NULL, `response_recorded` TEXT NOT NULL, `evaluation_type` TEXT NOT NULL, `auto_is_correct` INTEGER, `clinician_rating` TEXT, `cue_level` TEXT NOT NULL, `response_time_ms` INTEGER, `clinician_notes` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, FOREIGN KEY(`activity_id`) REFERENCES `session_activities`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "activityId",
+            "columnName": "activity_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "roundIndex",
+            "columnName": "round_index",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attemptNumber",
+            "columnName": "attempt_number",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stimulusTarget",
+            "columnName": "stimulus_target",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stimulusPresentedJson",
+            "columnName": "stimulus_presented_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "responseRecorded",
+            "columnName": "response_recorded",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "evaluationType",
+            "columnName": "evaluation_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autoIsCorrect",
+            "columnName": "auto_is_correct",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "clinicianRating",
+            "columnName": "clinician_rating",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "cueLevel",
+            "columnName": "cue_level",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "responseTimeMs",
+            "columnName": "response_time_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "clinicianNotes",
+            "columnName": "clinician_notes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_game_attempts_activity_id",
+            "unique": false,
+            "columnNames": [
+              "activity_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_game_attempts_activity_id` ON `${TABLE_NAME}` (`activity_id`)"
+          },
+          {
+            "name": "index_game_attempts_evaluation_type",
+            "unique": false,
+            "columnNames": [
+              "evaluation_type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_game_attempts_evaluation_type` ON `${TABLE_NAME}` (`evaluation_type`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "session_activities",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "activity_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "reward_progress",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`patient_id` INTEGER NOT NULL, `experience_points` INTEGER NOT NULL, `level` INTEGER NOT NULL, `active_theme_id` TEXT NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`patient_id`), FOREIGN KEY(`patient_id`) REFERENCES `patients`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "patientId",
+            "columnName": "patient_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "experiencePoints",
+            "columnName": "experience_points",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "level",
+            "columnName": "level",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "activeThemeId",
+            "columnName": "active_theme_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "patient_id"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "patients",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "patient_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "unlocked_collectibles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`patient_id` INTEGER NOT NULL, `collectible_id` TEXT NOT NULL, `unlocked_at` INTEGER NOT NULL, PRIMARY KEY(`patient_id`, `collectible_id`), FOREIGN KEY(`patient_id`) REFERENCES `patients`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "patientId",
+            "columnName": "patient_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collectibleId",
+            "columnName": "collectible_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unlockedAt",
+            "columnName": "unlocked_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "patient_id",
+            "collectible_id"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "patients",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "patient_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "game_favorites",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`game_id` TEXT NOT NULL, `added_at` INTEGER NOT NULL, PRIMARY KEY(`game_id`))",
+        "fields": [
+          {
+            "fieldPath": "gameId",
+            "columnName": "game_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addedAt",
+            "columnName": "added_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "game_id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '054313b4502554931590fdd5320ce5d6')"
+    ]
+  }
+}
