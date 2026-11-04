@@ -59,7 +59,22 @@ class PatientRepositoryImpl @Inject constructor(
             status = PatientStatus.ACTIVE.name,
             isDemo = isDemo,
             createdAt = now,
-            updatedAt = now
+            updatedAt = now,
+            socialName = data.socialName,
+            phone = data.phone,
+            email = data.email,
+            address = data.address,
+            guardianKinship = data.guardianKinship,
+            emergencyContact = data.emergencyContact,
+            school = data.school,
+            educationLevel = data.educationLevel,
+            communicationModalities = data.communicationModalities,
+            sensoryPreferences = data.sensoryPreferences,
+            effectiveReinforcers = data.effectiveReinforcers,
+            homeLanguages = data.homeLanguages,
+            schoolLanguage = data.schoolLanguage,
+            therapyLanguage = data.therapyLanguage,
+            lowStimulationMode = data.lowStimulationMode
         )
         return dao.insert(entity)
     }
@@ -73,7 +88,22 @@ class PatientRepositoryImpl @Inject constructor(
             guardianContact = data.guardianContact,
             followUpStartDate = data.followUpStartDate,
             clinicalNotes = data.clinicalNotes,
-            updatedAt = now
+            updatedAt = now,
+            socialName = data.socialName,
+            phone = data.phone,
+            email = data.email,
+            address = data.address,
+            guardianKinship = data.guardianKinship,
+            emergencyContact = data.emergencyContact,
+            school = data.school,
+            educationLevel = data.educationLevel,
+            communicationModalities = data.communicationModalities,
+            sensoryPreferences = data.sensoryPreferences,
+            effectiveReinforcers = data.effectiveReinforcers,
+            homeLanguages = data.homeLanguages,
+            schoolLanguage = data.schoolLanguage,
+            therapyLanguage = data.therapyLanguage,
+            lowStimulationMode = data.lowStimulationMode
         )
         dao.update(updated)
     }
@@ -107,6 +137,7 @@ class PatientRepositoryImpl @Inject constructor(
     }
 
     private fun PatientEntity.toDomain(): Patient {
+        val resolvedStatus = runCatching { PatientStatus.valueOf(status) }.getOrDefault(PatientStatus.ACTIVE)
         return Patient(
             id = id,
             internalCode = internalCode,
@@ -116,10 +147,25 @@ class PatientRepositoryImpl @Inject constructor(
             guardianContact = guardianContact,
             followUpStartDate = followUpStartDate,
             clinicalNotes = clinicalNotes,
-            status = PatientStatus.valueOf(status),
+            status = resolvedStatus,
             isDemo = isDemo,
             createdAt = createdAt,
-            updatedAt = updatedAt
+            updatedAt = updatedAt,
+            socialName = socialName?.takeIf { it.isNotBlank() },
+            phone = phone?.takeIf { it.isNotBlank() },
+            email = email?.takeIf { it.isNotBlank() },
+            address = address?.takeIf { it.isNotBlank() },
+            guardianKinship = guardianKinship?.takeIf { it.isNotBlank() },
+            emergencyContact = emergencyContact?.takeIf { it.isNotBlank() },
+            school = school?.takeIf { it.isNotBlank() },
+            educationLevel = educationLevel?.takeIf { it.isNotBlank() },
+            communicationModalities = communicationModalities,
+            sensoryPreferences = sensoryPreferences,
+            effectiveReinforcers = effectiveReinforcers,
+            homeLanguages = homeLanguages,
+            schoolLanguage = schoolLanguage,
+            therapyLanguage = therapyLanguage,
+            lowStimulationMode = lowStimulationMode
         )
     }
 }

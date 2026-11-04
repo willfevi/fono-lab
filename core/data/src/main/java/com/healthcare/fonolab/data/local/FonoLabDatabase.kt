@@ -5,18 +5,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.healthcare.fonolab.data.local.converter.DateTimeConverters
 import com.healthcare.fonolab.data.local.dao.ClinicalGoalDao
+import com.healthcare.fonolab.data.local.dao.ClinicalPlatformDao
 import com.healthcare.fonolab.data.local.dao.PatientDao
 import com.healthcare.fonolab.data.local.dao.RewardDao
 import com.healthcare.fonolab.data.local.dao.TherapySessionDao
-import com.healthcare.fonolab.data.local.entity.ClinicalGoalEntity
-import com.healthcare.fonolab.data.local.entity.GameAttemptEntity
-import com.healthcare.fonolab.data.local.entity.GameFavoriteEntity
-import com.healthcare.fonolab.data.local.entity.PatientEntity
-import com.healthcare.fonolab.data.local.entity.RewardProgressEntity
-import com.healthcare.fonolab.data.local.entity.SessionActivityEntity
-import com.healthcare.fonolab.data.local.entity.SessionGoalCrossRef
-import com.healthcare.fonolab.data.local.entity.TherapySessionEntity
-import com.healthcare.fonolab.data.local.entity.UnlockedCollectibleEntity
+import com.healthcare.fonolab.data.local.entity.*
 
 @Database(
     entities = [
@@ -28,9 +21,24 @@ import com.healthcare.fonolab.data.local.entity.UnlockedCollectibleEntity
         GameAttemptEntity::class,
         RewardProgressEntity::class,
         UnlockedCollectibleEntity::class,
-        GameFavoriteEntity::class
+        GameFavoriteEntity::class,
+        // Version 2 Extended Clinical & Administrative Platform Entities
+        AnamnesisEntity::class,
+        AnamnesisVersionEntity::class,
+        ClinicalAssessmentEntity::class,
+        PhonemeInventoryEntity::class,
+        TherapyPlanEntity::class,
+        GeneralizationProbeEntity::class,
+        ClinicalAppointmentEntity::class,
+        WaitlistAndReferralEntity::class,
+        HomePracticeTaskEntity::class,
+        ClinicalDocumentEntity::class,
+        BillingRecordEntity::class,
+        ClinicalTaskEntity::class,
+        CustomStimulusEntity::class,
+        AuditEventEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(DateTimeConverters::class)
@@ -39,4 +47,5 @@ abstract class FonoLabDatabase : RoomDatabase() {
     abstract fun clinicalGoalDao(): ClinicalGoalDao
     abstract fun therapySessionDao(): TherapySessionDao
     abstract fun rewardDao(): RewardDao
+    abstract fun clinicalPlatformDao(): ClinicalPlatformDao
 }

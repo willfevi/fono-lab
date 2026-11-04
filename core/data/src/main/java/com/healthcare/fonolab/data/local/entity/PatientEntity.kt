@@ -51,5 +51,51 @@ data class PatientEntity(
     val createdAt: Instant,
 
     @ColumnInfo(name = "updated_at")
-    val updatedAt: Instant
+    val updatedAt: Instant,
+
+    // Extended fields
+    @ColumnInfo(name = "social_name", defaultValue = "")
+    val socialName: String? = null,
+
+    @ColumnInfo(name = "phone", defaultValue = "")
+    val phone: String? = null,
+
+    @ColumnInfo(name = "email", defaultValue = "")
+    val email: String? = null,
+
+    @ColumnInfo(name = "address", defaultValue = "")
+    val address: String? = null,
+
+    @ColumnInfo(name = "guardian_kinship", defaultValue = "")
+    val guardianKinship: String? = null,
+
+    @ColumnInfo(name = "emergency_contact", defaultValue = "")
+    val emergencyContact: String? = null,
+
+    @ColumnInfo(name = "school", defaultValue = "")
+    val school: String? = null,
+
+    @ColumnInfo(name = "education_level", defaultValue = "")
+    val educationLevel: String? = null,
+
+    @ColumnInfo(name = "communication_modalities", defaultValue = "Fala oral")
+    val communicationModalities: String = "Fala oral",
+
+    @ColumnInfo(name = "sensory_preferences", defaultValue = "")
+    val sensoryPreferences: String = "",
+
+    @ColumnInfo(name = "effective_reinforcers", defaultValue = "")
+    val effectiveReinforcers: String = "",
+
+    @ColumnInfo(name = "home_languages", defaultValue = "Português Brasileiro")
+    val homeLanguages: String = "Português Brasileiro",
+
+    @ColumnInfo(name = "school_language", defaultValue = "Português Brasileiro")
+    val schoolLanguage: String = "Português Brasileiro",
+
+    @ColumnInfo(name = "therapy_language", defaultValue = "Português Brasileiro")
+    val therapyLanguage: String = "Português Brasileiro",
+
+    @ColumnInfo(name = "low_stimulation_mode", defaultValue = "0")
+    val lowStimulationMode: Boolean = false
 )

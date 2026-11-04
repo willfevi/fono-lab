@@ -4,12 +4,17 @@ import android.content.Context
 import androidx.room.Room
 import com.healthcare.fonolab.data.local.FonoLabDatabase
 import com.healthcare.fonolab.data.local.dao.ClinicalGoalDao
+import com.healthcare.fonolab.data.local.dao.ClinicalPlatformDao
 import com.healthcare.fonolab.data.local.dao.PatientDao
 import com.healthcare.fonolab.data.local.dao.RewardDao
 import com.healthcare.fonolab.data.local.dao.TherapySessionDao
 import com.healthcare.fonolab.data.repository.ClinicalGoalRepositoryImpl
+import com.healthcare.fonolab.data.repository.ClinicalPlatformRepositoryImpl
 import com.healthcare.fonolab.data.repository.PatientRepositoryImpl
 import com.healthcare.fonolab.data.repository.TherapySessionRepositoryImpl
+import com.healthcare.fonolab.domain.clinical.ClinicalPlatformRepository
+import com.healthcare.fonolab.domain.datetime.PlatformClock
+import com.healthcare.fonolab.domain.datetime.SystemPlatformClock
 import com.healthcare.fonolab.domain.goal.ClinicalGoalRepository
 import com.healthcare.fonolab.domain.patient.PatientRepository
 import com.healthcare.fonolab.domain.session.TherapySessionRepository
@@ -50,6 +55,9 @@ object DatabaseModule {
     fun provideRewardDao(db: FonoLabDatabase): RewardDao = db.rewardDao()
 
     @Provides
+    fun provideClinicalPlatformDao(db: FonoLabDatabase): ClinicalPlatformDao = db.clinicalPlatformDao()
+
+    @Provides
     @Singleton
     fun provideClock(): Clock = Clock.systemDefaultZone()
 
@@ -73,4 +81,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTherapySessionRepository(impl: TherapySessionRepositoryImpl): TherapySessionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindClinicalPlatformRepository(impl: ClinicalPlatformRepositoryImpl): ClinicalPlatformRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlatformClock(impl: SystemPlatformClock): PlatformClock
 }

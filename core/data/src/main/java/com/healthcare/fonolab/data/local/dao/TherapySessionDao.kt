@@ -21,10 +21,10 @@ interface TherapySessionDao {
     @Query("SELECT * FROM therapy_sessions ORDER BY scheduled_at DESC LIMIT :limit")
     fun observeRecent(limit: Int): Flow<List<TherapySessionEntity>>
 
-    @Query("SELECT * FROM therapy_sessions WHERE status = 'IN_PROGRESS' ORDER BY scheduled_at DESC LIMIT 1")
+    @Query("SELECT * FROM therapy_sessions WHERE status IN ('IN_PROGRESS', 'PAUSED') ORDER BY scheduled_at DESC LIMIT 1")
     fun observeActiveSession(): Flow<TherapySessionEntity?>
 
-    @Query("SELECT * FROM therapy_sessions WHERE status = 'IN_PROGRESS' ORDER BY scheduled_at DESC LIMIT 1")
+    @Query("SELECT * FROM therapy_sessions WHERE status IN ('IN_PROGRESS', 'PAUSED') ORDER BY scheduled_at DESC LIMIT 1")
     suspend fun getActiveSession(): TherapySessionEntity?
 
     @Query("SELECT * FROM therapy_sessions WHERE id = :id")
@@ -36,7 +36,7 @@ interface TherapySessionDao {
     @Query("SELECT COUNT(*) FROM therapy_sessions WHERE status = 'COMPLETED' AND (:since IS NULL OR ended_at >= :since)")
     fun observeCompletedCount(since: Instant?): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM therapy_sessions WHERE status = 'PLANNED'")
+    @Query("SELECT COUNT(*) FROM therapy_sessions WHERE status IN ('PLANNED', 'DRAFT')")
     fun observePlannedCount(): Flow<Int>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
