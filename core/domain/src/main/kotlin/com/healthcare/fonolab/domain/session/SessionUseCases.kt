@@ -69,6 +69,117 @@ interface TherapySessionRepository {
     suspend fun getAttemptsForPatient(patientId: Long): List<GameAttempt>
 }
 
+/**
+ * Creates a planned or draft session in advance.
+ * CRITICAL RULE: A planned session NEVER starts automatically upon creation and NEVER counts
+ * as a completed clinical session.
+ */
+class PlanSessionUseCase @Inject constructor(
+    private val repository: TherapySessionRepository,
+    private val clock: Clock
+) {
+    suspend operator fun invoke(
+        patientId: Long,
+        scheduledAt: Instant,
+        linkedGoalIds: List<Long> = emptyList(),
+        plannedGameIds: List<String> = emptyList(),
+        notes: String = "",
+        summary: String = "",
+        isDraft: Boolean = false,
+        isDemo: Boolean = false
+    ): DomainResult<Long> {
+        val now = clock.instant()
+        val initialStatus = if (isDraft) SessionStatus.DRAFT else SessionStatus.PLANNED
+        return storageCall {
+            val sessionId = repository.createSession(
+                patientId = patientId,
+                scheduledAt = scheduledAt,
+                status = initialStatus,
+                linkedGoalIds = linkedGoalIds,
+                isDemo = isDemo,
+                now = now
+            )
+            if (notes.isNotBlank() || summary.isNotBlank()) {
+                repository.updateSessionNotes(sessionId, notes, summary, now)
+            }
+            plannedGameIds.forEachIndexed { index, gameId ->
+                repository.addActivity(
+                    sessionId = sessionId,
+                    gameId = gameId,
+                    linkedGoalId = linkedGoalIds.firstOrNull(),
+                    configurationJson = "{}",
+                    orderIndex = index + 1,
+                    now = now
+                )
+            }
+            sessionId
+        }
+    }
+}
+
+/**
+ * Transitions a PLANNED, DRAFT, or PAUSED session to IN_PROGRESS only when the clinician explicitly starts it.
+ */
+class StartPlannedSessionUseCase @Inject constructor(
+    private val repository: TherapySessionRepository,
+    private val clock: Clock
+) {
+    suspend operator fun invoke(sessionId: Long): DomainResult<Long> {
+        val active = repository.getActiveSession()
+        if (active != null && active.session.id != sessionId) {
+            return DomainResult.Failure(DomainError.InvalidState(InvalidStateReason.SESSION_ALREADY_IN_PROGRESS))
+        }
+        val details = repository.getSessionWithDetails(sessionId)
+            ?: return DomainResult.Failure(DomainError.NotFound(EntityType.SESSION))
+
+        if (details.session.status == SessionStatus.COMPLETED || details.session.status == SessionStatus.CANCELLED) {
+            return DomainResult.Failure(DomainError.InvalidState(InvalidStateReason.SESSION_ALREADY_CLOSED))
+        }
+
+        val now = clock.instant()
+        return storageCall {
+            repository.updateSessionStatus(
+                sessionId = sessionId,
+                status = SessionStatus.IN_PROGRESS,
+                startedAt = details.session.startedAt ?: now,
+                endedAt = null,
+                durationSeconds = details.session.durationSeconds,
+                now = now
+            )
+            sessionId
+        }
+    }
+}
+
+class PauseSessionUseCase @Inject constructor(
+    private val repository: TherapySessionRepository,
+    private val clock: Clock
+) {
+    suspend operator fun invoke(sessionId: Long): DomainResult<Unit> {
+        val details = repository.getSessionWithDetails(sessionId)
+            ?: return DomainResult.Failure(DomainError.NotFound(EntityType.SESSION))
+
+        if (details.session.status != SessionStatus.IN_PROGRESS) {
+            return DomainResult.Failure(DomainError.InvalidState(InvalidStateReason.SESSION_NOT_IN_PROGRESS))
+        }
+
+        val now = clock.instant()
+        val started = details.session.startedAt ?: now
+        val elapsed = maxOf(0L, java.time.Duration.between(started, now).seconds)
+
+        return storageCall {
+            repository.updateSessionStatus(
+                sessionId = sessionId,
+                status = SessionStatus.PAUSED,
+                startedAt = started,
+                endedAt = null,
+                durationSeconds = maxOf(details.session.durationSeconds, elapsed),
+                now = now
+            )
+        }
+    }
+}
+
 class StartSessionUseCase @Inject constructor(
     private val repository: TherapySessionRepository,
     private val clock: Clock
@@ -118,13 +229,13 @@ class FinishSessionUseCase @Inject constructor(
         val details = repository.getSessionWithDetails(sessionId)
             ?: return DomainResult.Failure(DomainError.NotFound(EntityType.SESSION))
 
-        if (details.session.status != SessionStatus.IN_PROGRESS) {
+        if (details.session.status != SessionStatus.IN_PROGRESS && details.session.status != SessionStatus.PAUSED) {
             return DomainResult.Failure(DomainError.InvalidState(InvalidStateReason.SESSION_NOT_IN_PROGRESS))
         }
 
         val now = clock.instant()
         val started = details.session.startedAt ?: now
-        val duration = maxOf(0L, java.time.Duration.between(started, now).seconds)
+        val duration = maxOf(details.session.durationSeconds, java.time.Duration.between(started, now).seconds)
 
         return storageCall {
             repository.updateSessionNotes(sessionId, clinicalNotes, clinicalSummary, now)

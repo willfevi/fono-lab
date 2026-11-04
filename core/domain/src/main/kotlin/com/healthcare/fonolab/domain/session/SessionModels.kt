@@ -3,18 +3,20 @@ package com.healthcare.fonolab.domain.session
 import com.healthcare.fonolab.domain.goal.ClinicalGoal
 import java.time.Instant
 
-enum class SessionStatus {
-    PLANNED,
-    IN_PROGRESS,
-    COMPLETED,
-    CANCELLED
+enum class SessionStatus(val displayName: String) {
+    DRAFT("Rascunho"),
+    PLANNED("Planejada"),
+    IN_PROGRESS("Em andamento"),
+    PAUSED("Pausada"),
+    COMPLETED("Concluída"),
+    CANCELLED("Cancelada")
 }
 
-enum class ActivityStatus {
-    PENDING,
-    IN_PROGRESS,
-    COMPLETED,
-    ABANDONED
+enum class ActivityStatus(val displayName: String) {
+    PENDING("Pendente"),
+    IN_PROGRESS("Em execução"),
+    COMPLETED("Concluída"),
+    ABANDONED("Pulada")
 }
 
 data class TherapySession(
