@@ -284,11 +284,13 @@ fun MockupHeroChallengeCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy((-10).dp)
+                    ) {
                         participantInitials.forEachIndexed { i, initial ->
                             Box(
                                 modifier = Modifier
-                                    .padding(start = if (i == 0) 0.dp else (-10).dp)
                                     .size(32.dp)
                                     .clip(CircleShape)
                                     .background(
@@ -313,7 +315,6 @@ fun MockupHeroChallengeCard(
                         if (extraCount > 0) {
                             Box(
                                 modifier = Modifier
-                                    .padding(start = (-10).dp)
                                     .size(32.dp)
                                     .clip(CircleShape)
                                     .background(Color.White)
@@ -702,6 +703,7 @@ fun MockupListItem(
 @Composable
 fun FonoCard(
     modifier: Modifier = Modifier,
+    containerColor: Color = MockupSurface,
     border: BorderStroke? = BorderStroke(1.dp, MockupBorder),
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
@@ -712,7 +714,7 @@ fun FonoCard(
             modifier = modifier,
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MockupSurface
+                containerColor = containerColor
             ),
             border = border,
             elevation = CardDefaults.cardElevation(
@@ -727,7 +729,7 @@ fun FonoCard(
             modifier = modifier,
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MockupSurface
+                containerColor = containerColor
             ),
             border = border,
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)

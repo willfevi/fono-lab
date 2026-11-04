@@ -24,6 +24,9 @@ sealed interface Screen {
     data class PatientForm(val patientId: Long? = null) : Screen
 
     @Serializable
+    data class Anamnesis(val patientId: Long) : Screen
+
+    @Serializable
     data object GameCatalog : Screen
 
     @Serializable

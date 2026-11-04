@@ -2,12 +2,17 @@ package com.healthcare.fonolab.core.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,9 +26,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.healthcare.fonolab.core.designsystem.component.MockupFloatingNavBar
 import com.healthcare.fonolab.core.designsystem.theme.MockupBackground
+import com.healthcare.fonolab.core.designsystem.theme.MockupSurface
+import com.healthcare.fonolab.feature.anamnesis.AnamnesisScreen
+import com.healthcare.fonolab.feature.anamnesis.AnamnesisViewModel
 import com.healthcare.fonolab.feature.dashboard.DashboardScreen
 import com.healthcare.fonolab.feature.dashboard.DashboardViewModel
 import com.healthcare.fonolab.feature.gamecatalog.GameCatalogScreen
@@ -47,47 +54,78 @@ fun FonoLabApp(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-
-    // Check if the current route is full screen game play (hide top and bottom navigation)
     val isGamePlayScreen = currentDestination?.route?.contains("GamePlay") == true
 
     if (isGamePlayScreen) {
         FonoLabNavHost(navController = navController, modifier = Modifier.fillMaxSize())
-    } else {
-        val destinations = TopLevelDestination.entries
-        val currentRoute = currentDestination?.route
-        val selectedIndex = destinations.indexOfFirst { dest ->
-            currentRoute?.contains(dest.route::class.simpleName ?: "") == true
-        }.let { if (it >= 0) it else 0 }
+        return
+    }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MockupBackground)
-                .padding(WindowInsets.safeDrawing.asPaddingValues())
-        ) {
-            FonoLabNavHost(
-                navController = navController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 80.dp)
-            )
+    val destinations = TopLevelDestination.entries
+    val currentRoute = currentDestination?.route
+    val selectedIndex = destinations.indexOfFirst { dest ->
+        currentRoute?.contains(dest.route::class.simpleName ?: "") == true
+    }.let { if (it >= 0) it else 0 }
 
-            MockupFloatingNavBar(
-                items = destinations.map { it.icon to it.title },
-                selectedIndex = selectedIndex,
-                onItemSelected = { index ->
-                    val destination = destinations[index]
-                    navController.navigate(destination.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
+    val onSelectDestination: (Int) -> Unit = { index ->
+        val destination = destinations[index]
+        navController.navigate(destination.route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MockupBackground)
+            .padding(WindowInsets.safeDrawing.asPaddingValues())
+    ) {
+        val isTabletOrDesktop = maxWidth >= 600.dp
+
+        if (isTabletOrDesktop) {
+            // Adaptive Medium/Expanded Layout (Tablet & Desktop NavigationRail)
+            Row(modifier = Modifier.fillMaxSize()) {
+                NavigationRail(
+                    containerColor = MockupSurface,
+                    modifier = Modifier.fillMaxHeight()
+                ) {
+                    destinations.forEachIndexed { idx, dest ->
+                        NavigationRailItem(
+                            selected = selectedIndex == idx,
+                            onClick = { onSelectDestination(idx) },
+                            icon = { Icon(dest.icon, contentDescription = dest.title) },
+                            label = { Text(dest.title) }
+                        )
                     }
-                },
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+                }
+                FonoLabNavHost(
+                    navController = navController,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
+            }
+        } else {
+            // Compact Layout (Smartphone Floating Dark Pill Navigation Bar)
+            Box(modifier = Modifier.fillMaxSize()) {
+                FonoLabNavHost(
+                    navController = navController,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 80.dp)
+                )
+
+                MockupFloatingNavBar(
+                    items = destinations.map { it.icon to it.title },
+                    selectedIndex = selectedIndex,
+                    onItemSelected = onSelectDestination,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
+            }
         }
     }
 }
@@ -132,6 +170,11 @@ fun FonoLabNavHost(
                 onPatientSaved = { id ->
                     navController.popBackStack()
                     navController.navigate(Screen.PatientDetail(id))
+                },
+                onPatientSavedOpenAnamnesis = { id ->
+                    navController.popBackStack()
+                    navController.navigate(Screen.PatientDetail(id))
+                    navController.navigate(Screen.Anamnesis(id))
                 }
             )
         }
@@ -145,7 +188,16 @@ fun FonoLabNavHost(
                 onNavigateToStartSession = { sessionId ->
                     navController.navigate(Screen.SessionHub(sessionId))
                 },
-                onNavigateToSessionHub = { id -> navController.navigate(Screen.SessionHub(id)) }
+                onNavigateToSessionHub = { id -> navController.navigate(Screen.SessionHub(id)) },
+                onNavigateToAnamnesis = { id -> navController.navigate(Screen.Anamnesis(id)) }
+            )
+        }
+
+        composable<Screen.Anamnesis> {
+            val viewModel: AnamnesisViewModel = hiltViewModel()
+            AnamnesisScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
