@@ -5,11 +5,16 @@ local.properties
 .idea/
 .kotlin/
 .DS_Store
-build/
 /build
+/build/
+!docs/build/
 app/build/
 core/data/build/
 core/domain/build/
+shared/build/
+desktopApp/build/
+dist/
+/dist
 /captures
 .externalNativeBuild
 .cxx
@@ -17,4 +22,3 @@ core/domain/build/
 *.aab
 *.jks
 *.keystore
-

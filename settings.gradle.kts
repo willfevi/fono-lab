@@ -26,3 +26,5 @@ rootProject.name = "FonoLab"
 include(":app")
 include(":core:domain")
 include(":core:data")
+include(":shared")
+include(":desktopApp")
