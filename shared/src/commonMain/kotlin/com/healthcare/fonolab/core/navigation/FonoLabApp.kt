@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -19,13 +18,6 @@ import androidx.navigation.toRoute
 import com.healthcare.fonolab.core.designsystem.component.MockupFloatingNavBar
 import com.healthcare.fonolab.core.designsystem.theme.MockupBackground
 import com.healthcare.fonolab.core.designsystem.theme.MockupSurface
-import com.healthcare.fonolab.core.di.LocalFonoLabContainer
-import com.healthcare.fonolab.core.platform.LocalPlatformServices
-import com.healthcare.fonolab.domain.manager.*
-import com.healthcare.fonolab.domain.patient.ChangePatientStatusUseCase
-import com.healthcare.fonolab.domain.patient.DeletePatientUseCase
-import com.healthcare.fonolab.domain.session.FinishSessionUseCase
-import com.healthcare.fonolab.domain.session.StartSessionUseCase
 import com.healthcare.fonolab.feature.anamnesis.AnamnesisScreen
 import com.healthcare.fonolab.feature.anamnesis.AnamnesisViewModel
 import com.healthcare.fonolab.feature.dashboard.DashboardScreen
@@ -45,8 +37,8 @@ import com.healthcare.fonolab.feature.sessions.SessionsScreen
 import com.healthcare.fonolab.feature.sessions.hub.SessionHubScreen
 import com.healthcare.fonolab.feature.sessions.hub.SessionHubViewModel
 import com.healthcare.fonolab.feature.settings.SettingsScreen
-import java.time.Clock
-import java.time.ZoneId
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun FonoLabApp(
@@ -161,23 +153,13 @@ fun FonoLabNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val container = LocalFonoLabContainer.current
-    val platformServices = LocalPlatformServices.current
-    val defaultClock = Clock.system(ZoneId.of("America/Sao_Paulo"))
-
     NavHost(
         navController = navController,
         startDestination = Screen.Dashboard,
         modifier = modifier
     ) {
         composable<Screen.Dashboard> {
-            val viewModel: DashboardViewModel = viewModel {
-                DashboardViewModel(
-                    patientRepository = container.patientRepository,
-                    sessionRepository = container.sessionRepository,
-                    qualityControlManager = container.qualityControlManager
-                )
-            }
+            val viewModel: DashboardViewModel = koinViewModel()
             DashboardScreen(
                 viewModel = viewModel,
                 onNavigateToNewPatient = { navController.navigate(Screen.PatientForm()) },
@@ -190,9 +172,7 @@ fun FonoLabNavHost(
         }
 
         composable<Screen.Patients> {
-            val viewModel: PatientsViewModel = viewModel {
-                PatientsViewModel(container.patientRepository)
-            }
+            val viewModel: PatientsViewModel = koinViewModel()
             PatientsScreen(
                 viewModel = viewModel,
                 onNavigateToNewPatient = { navController.navigate(Screen.PatientForm()) },
@@ -202,13 +182,7 @@ fun FonoLabNavHost(
 
         composable<Screen.PatientForm> { backStackEntry ->
             val route = backStackEntry.toRoute<Screen.PatientForm>()
-            val viewModel: PatientFormViewModel = viewModel {
-                PatientFormViewModel(
-                    patientId = route.patientId,
-                    patientManager = container.patientManager,
-                    dateTimeManager = container.dateTimeManager
-                )
-            }
+            val viewModel: PatientFormViewModel = koinViewModel(viewModelStoreOwner = backStackEntry) { parametersOf(route) }
             PatientFormScreen(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
@@ -226,32 +200,7 @@ fun FonoLabNavHost(
 
         composable<Screen.PatientDetail> { backStackEntry ->
             val route = backStackEntry.toRoute<Screen.PatientDetail>()
-            val viewModel: PatientDetailsViewModel = viewModel {
-                PatientDetailsViewModel(
-                    patientId = route.patientId,
-                    patientRepository = container.patientRepository,
-                    goalRepository = container.goalRepository,
-                    sessionRepository = container.sessionRepository,
-                    startSessionUseCase = StartSessionUseCase(container.sessionRepository, defaultClock),
-                    changeStatusUseCase = ChangePatientStatusUseCase(container.patientRepository, defaultClock),
-                    deletePatientUseCase = DeletePatientUseCase(container.patientRepository),
-                    dateTimeManager = container.dateTimeManager,
-                    anamnesisManager = container.anamnesisManager,
-                    assessmentManager = container.assessmentManager,
-                    phonologyManager = container.phonologyManager,
-                    therapyManager = container.therapyManager,
-                    generalizationManager = container.generalizationManager,
-                    sessionManager = container.sessionManager,
-                    planningAssistant = container.planningAssistant,
-                    homePracticeManager = container.homePracticeManager,
-                    caregiverManager = container.caregiverManager,
-                    documentManager = container.documentManager,
-                    templateManager = container.templateManager,
-                    docAssistant = container.docAssistant,
-                    historyManager = container.historyManager,
-                    clinicalDataManager = container.clinicalDataManager
-                )
-            }
+            val viewModel: PatientDetailsViewModel = koinViewModel(viewModelStoreOwner = backStackEntry) { parametersOf(route) }
             PatientDetailsScreen(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
@@ -266,15 +215,7 @@ fun FonoLabNavHost(
 
         composable<Screen.Anamnesis> { backStackEntry ->
             val route = backStackEntry.toRoute<Screen.Anamnesis>()
-            val viewModel: AnamnesisViewModel = viewModel {
-                AnamnesisViewModel(
-                    patientId = route.patientId,
-                    patientManager = container.patientManager,
-                    anamnesisManager = container.anamnesisManager,
-                    formManager = container.formManager,
-                    dateTimeManager = container.dateTimeManager
-                )
-            }
+            val viewModel: AnamnesisViewModel = koinViewModel(viewModelStoreOwner = backStackEntry) { parametersOf(route) }
             AnamnesisScreen(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
@@ -291,16 +232,7 @@ fun FonoLabNavHost(
 
         composable<Screen.GamePlay> { backStackEntry ->
             val route = backStackEntry.toRoute<Screen.GamePlay>()
-            val viewModel: GamePlayViewModel = viewModel {
-                GamePlayViewModel(
-                    gameId = route.gameId,
-                    sessionId = route.sessionId,
-                    activityId = route.activityId,
-                    sessionRepository = container.sessionRepository,
-                    audioService = platformServices.audioService,
-                    clock = defaultClock
-                )
-            }
+            val viewModel: GamePlayViewModel = koinViewModel(viewModelStoreOwner = backStackEntry) { parametersOf(route) }
             GamePlayScreen(
                 viewModel = viewModel,
                 onExitGame = { navController.popBackStack() }
@@ -309,22 +241,14 @@ fun FonoLabNavHost(
 
         composable<Screen.Sessions> {
             SessionsScreen(
+                viewModel = koinViewModel(),
                 onSessionClick = { id -> navController.navigate(Screen.SessionHub(id)) }
             )
         }
 
         composable<Screen.SessionHub> { backStackEntry ->
             val route = backStackEntry.toRoute<Screen.SessionHub>()
-            val viewModel: SessionHubViewModel = viewModel {
-                SessionHubViewModel(
-                    sessionId = route.sessionId,
-                    sessionRepository = container.sessionRepository,
-                    sessionManager = container.sessionManager,
-                    documentManager = container.documentManager,
-                    finishSessionUseCase = FinishSessionUseCase(container.sessionRepository, defaultClock),
-                    clock = defaultClock
-                )
-            }
+            val viewModel: SessionHubViewModel = koinViewModel(viewModelStoreOwner = backStackEntry) { parametersOf(route) }
             SessionHubScreen(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
@@ -335,20 +259,12 @@ fun FonoLabNavHost(
         }
 
         composable<Screen.Reports> {
-            val viewModel: ReportsViewModel = viewModel {
-                ReportsViewModel(
-                    patientRepository = container.patientRepository,
-                    sessionRepository = container.sessionRepository,
-                    billingManager = container.billingManager,
-                    contentLibraryManager = container.contentLibraryManager,
-                    dateTimeManager = container.dateTimeManager
-                )
-            }
+            val viewModel: ReportsViewModel = koinViewModel()
             ReportsScreen(viewModel = viewModel)
         }
 
         composable<Screen.Settings> {
-            SettingsScreen()
+            SettingsScreen(viewModel = koinViewModel())
         }
     }
 }

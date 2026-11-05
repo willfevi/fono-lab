@@ -1,6 +1,7 @@
 package com.healthcare.fonolab.feature.anamnesis
 
-import java.io.File
+import com.healthcare.fonolab.domain.files.File
+import com.healthcare.fonolab.domain.files.writeText
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,7 +47,6 @@ import com.healthcare.fonolab.domain.manager.PatientManager
 import com.healthcare.fonolab.domain.patient.Patient
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class AnamnesisUiState(
     val patient: Patient? = null,
@@ -251,7 +251,7 @@ fun AnamnesisScreen(
                                 val exportDir = File("Documents/FonoLab/Anamneses").apply { mkdirs() }
                                 val file = File(exportDir, "Anamnese_${patient.internalCode}_v${record.versionNumber}.txt")
                                 file.writeText("ANAMNESE CLINICA FONOAUDIOLOGICA\nPaciente: ${patient.fullName} (${patient.internalCode})\nInformante: ${record.informantName}\nResumo: ${record.generalSummary}")
-                                viewModel.notifyMessage("Anamnese gerada em: ${file.name}")
+                                viewModel.notifyMessage("Anamnese gerada em: ${file.getName()}")
                                 runCatching {
                                     // Compartilhamento multiplataforma de arquivo/texto
                                     viewModel.notifyMessage("Anamnese de ${patient.fullName} gerada com sucesso.")
@@ -520,7 +520,7 @@ fun AnamnesisScreen(
                             val exportDir = File("Documents/FonoLab/Anamneses").apply { mkdirs() }
                             val file = File(exportDir, "Anamnese_${patient.internalCode}_v${record.versionNumber}.txt")
                             file.writeText("ANAMNESE CLINICA FONOAUDIOLOGICA\nPaciente: ${patient.fullName} (${patient.internalCode})\nInformante: ${record.informantName}\nResumo: ${record.generalSummary}")
-                            viewModel.notifyMessage("Anamnese gerada com sucesso: ${file.name}")
+                            viewModel.notifyMessage("Anamnese gerada com sucesso: ${file.getName()}")
                         }
                     },
                     icon = Icons.Default.PictureAsPdf,

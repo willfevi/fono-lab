@@ -1,146 +1,16 @@
 package com.healthcare.fonolab.core.di
 
+import com.healthcare.fonolab.domain.datetime.currentLocalDate
+import com.healthcare.fonolab.domain.datetime.Instant
+import com.healthcare.fonolab.domain.datetime.isAfter
 import com.healthcare.fonolab.domain.clinical.*
 import com.healthcare.fonolab.domain.common.DomainResult
 import com.healthcare.fonolab.domain.datetime.PlatformClock
-import com.healthcare.fonolab.domain.datetime.DateTimeManager
 import com.healthcare.fonolab.domain.goal.*
-import com.healthcare.fonolab.domain.manager.*
 import com.healthcare.fonolab.domain.patient.*
 import com.healthcare.fonolab.domain.performance.GameAttempt
 import com.healthcare.fonolab.domain.session.*
 import kotlinx.coroutines.flow.*
-import java.time.Clock
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-
-/**
- * Universal in-memory reactive repository provider with Brazilian clinical seeds,
- * powering Desktop JVM and test environments offline with zero dependencies.
- */
-class DefaultFonoLabContainer(
-    val jvmClock: Clock = Clock.system(ZoneId.of("America/Sao_Paulo")),
-    val clock: PlatformClock = com.healthcare.fonolab.domain.datetime.SystemPlatformClock(jvmClock)
-) : FonoLabContainer {
-
-    override val dateTimeManager = DateTimeManager(jvmClock)
-
-    // ========================================================================
-    // 1. REPOSITORIES
-    // ========================================================================
-    override val patientRepository: PatientRepository = InMemoryPatientRepository(clock)
-    override val sessionRepository: TherapySessionRepository = InMemoryTherapySessionRepository(clock)
-    override val goalRepository: ClinicalGoalRepository = InMemoryClinicalGoalRepository(clock)
-    override val platformRepository: ClinicalPlatformRepository = InMemoryClinicalPlatformRepository(clock)
-
-    // ========================================================================
-    // 2. CLINICAL MANAGERS
-    // ========================================================================
-    override val auditManager = AuditManager(clinicalRepository = platformRepository)
-    override val formManager = FormManager(
-        patientValidator = PatientValidator(jvmClock),
-        dateTimeManager = dateTimeManager
-    )
-    override val patientManager = PatientManager(
-        repository = patientRepository,
-        savePatientUseCase = SavePatientUseCase(
-            repository = patientRepository,
-            validator = PatientValidator(jvmClock),
-            codeGenerator = InternalCodeGenerator(jvmClock, kotlin.random.Random.Default),
-            clock = jvmClock
-        ),
-        changeStatusUseCase = ChangePatientStatusUseCase(
-            repository = patientRepository,
-            clock = jvmClock
-        ),
-        deletePatientUseCase = DeletePatientUseCase(patientRepository),
-        auditManager = auditManager,
-        dateTimeManager = dateTimeManager
-    )
-    override val sessionManager = SessionManager(
-        sessionRepository = sessionRepository,
-        planSessionUseCase = PlanSessionUseCase(sessionRepository, jvmClock),
-        startPlannedSessionUseCase = StartPlannedSessionUseCase(sessionRepository, jvmClock),
-        pauseSessionUseCase = PauseSessionUseCase(sessionRepository, jvmClock),
-        startSessionUseCase = StartSessionUseCase(sessionRepository, jvmClock),
-        finishSessionUseCase = FinishSessionUseCase(sessionRepository, jvmClock),
-        cancelSessionUseCase = CancelSessionUseCase(sessionRepository, jvmClock),
-        dateTimeManager = dateTimeManager,
-        auditManager = auditManager
-    )
-    override val anamnesisManager = AnamnesisManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager,
-        auditManager = auditManager
-    )
-    override val gameManager = GameManager(sessionRepository = sessionRepository)
-    override val clinicalDataManager = ClinicalDataManager()
-    override val reportManager = ReportManager(clinicalDataManager = clinicalDataManager)
-    override val billingManager = BillingManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager,
-        auditManager = auditManager
-    )
-    override val scheduleManager = ScheduleManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager,
-        auditManager = auditManager
-    )
-    override val referralManager = ReferralManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager
-    )
-    override val contentLibraryManager = ContentLibraryManager(clinicalRepository = platformRepository)
-    override val assessmentManager = AssessmentManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager,
-        auditManager = auditManager
-    )
-    override val phonologyManager = PhonologyManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager
-    )
-    override val therapyManager = TherapyManager(
-        clinicalRepository = platformRepository,
-        goalRepository = goalRepository,
-        saveGoalUseCase = SaveGoalUseCase(
-            repository = goalRepository,
-            validator = GoalValidator(),
-            clock = jvmClock
-        ),
-        dateTimeManager = dateTimeManager,
-        auditManager = auditManager
-    )
-    override val generalizationManager = GeneralizationManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager
-    )
-    override val planningAssistant = SessionPlanningAssistantManager()
-    override val homePracticeManager = HomePracticeManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager
-    )
-    override val caregiverManager = CaregiverManager()
-    override val documentManager = DocumentManager(
-        clinicalRepository = platformRepository,
-        dateTimeManager = dateTimeManager,
-        auditManager = auditManager
-    )
-    override val templateManager = TemplateManager()
-    override val docAssistant = DocumentationAssistantManager(clinicalDataManager = clinicalDataManager)
-    override val historyManager = HistoryManager(
-        clinicalRepository = platformRepository,
-        sessionRepository = sessionRepository,
-        dateTimeManager = dateTimeManager
-    )
-    override val qualityControlManager = QualityControlManager(
-        patientRepository = patientRepository,
-        clinicalRepository = platformRepository,
-        sessionRepository = sessionRepository
-    )
-    override val accountManager = AccountManager(clinicalRepository = platformRepository)
-}
 
 /**
  * In-memory reactive implementation of PatientRepository with realistic clinical seeds.
@@ -153,10 +23,10 @@ class InMemoryPatientRepository(private val clock: PlatformClock) : PatientRepos
                 id = 1L,
                 internalCode = "PAC-001",
                 fullName = "Lucas Gabriel Silva",
-                birthDate = LocalDate.now().minusYears(6).minusMonths(3),
+                birthDate = currentLocalDate().minusYears(6).minusMonths(3),
                 guardianName = "Mariana Silva",
                 guardianContact = "(11) 98765-4321",
-                followUpStartDate = LocalDate.now().minusMonths(4),
+                followUpStartDate = currentLocalDate().minusMonths(4),
                 clinicalNotes = "Desvio fonológico com processos de plosivação e ensurdecimento.",
                 status = PatientStatus.ACTIVE,
                 isDemo = false,
@@ -167,10 +37,10 @@ class InMemoryPatientRepository(private val clock: PlatformClock) : PatientRepos
                 id = 2L,
                 internalCode = "PAC-002",
                 fullName = "Beatriz Helena Santos",
-                birthDate = LocalDate.now().minusYears(4).minusMonths(8),
+                birthDate = currentLocalDate().minusYears(4).minusMonths(8),
                 guardianName = "Carlos Santos",
                 guardianContact = "(11) 97654-3210",
-                followUpStartDate = LocalDate.now().minusMonths(2),
+                followUpStartDate = currentLocalDate().minusMonths(2),
                 clinicalNotes = "Atraso no desenvolvimento da linguagem expressiva e queixa de troca de fonemas.",
                 status = PatientStatus.ACTIVE,
                 isDemo = false,
@@ -181,10 +51,10 @@ class InMemoryPatientRepository(private val clock: PlatformClock) : PatientRepos
                 id = 3L,
                 internalCode = "PAC-003",
                 fullName = "Gabriel Oliveira Rocha",
-                birthDate = LocalDate.now().minusYears(8).minusMonths(1),
+                birthDate = currentLocalDate().minusYears(8).minusMonths(1),
                 guardianName = "Patrícia Rocha",
                 guardianContact = "(21) 99887-6655",
-                followUpStartDate = LocalDate.now().minusMonths(6),
+                followUpStartDate = currentLocalDate().minusMonths(6),
                 clinicalNotes = "Dificuldade em consciência fonológica e segmentação silábica em contexto escolar.",
                 status = PatientStatus.ACTIVE,
                 isDemo = false,
@@ -195,10 +65,10 @@ class InMemoryPatientRepository(private val clock: PlatformClock) : PatientRepos
                 id = 4L,
                 internalCode = "PAC-004",
                 fullName = "Sofia Mendes Carvalho",
-                birthDate = LocalDate.now().minusYears(5).minusMonths(6),
+                birthDate = currentLocalDate().minusYears(5).minusMonths(6),
                 guardianName = "Renata Carvalho",
                 guardianContact = "(31) 98877-2233",
-                followUpStartDate = LocalDate.now().minusMonths(1),
+                followUpStartDate = currentLocalDate().minusMonths(1),
                 clinicalNotes = "Ceceio anterior e interdentalização durante fala espontânea.",
                 status = PatientStatus.ACTIVE,
                 isDemo = false,
@@ -630,7 +500,7 @@ class InMemoryClinicalPlatformRepository(private val clock: PlatformClock) : Cli
                 informantName = "Mariana Silva",
                 informantKinship = "Mãe",
                 referredBy = "Escola Municipal",
-                anamnesisDate = java.time.LocalDate.now().minusMonths(4),
+                anamnesisDate = currentLocalDate().minusMonths(4),
                 sections = emptyList(),
                 generalSummary = "Anamnese completa sem intercorrências no parto. Queixa fonológica comunicada pela escola.",
                 versionNumber = 1,

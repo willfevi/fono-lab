@@ -11,10 +11,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.QueuePlayNext
 import androidx.compose.material3.*
@@ -44,7 +44,6 @@ import com.healthcare.fonolab.domain.session.TherapySession
 import com.healthcare.fonolab.feature.games.GameCatalogRegistry
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class SessionsAgendaUiState(
     val sessions: List<TherapySession> = emptyList(),
@@ -54,7 +53,7 @@ data class SessionsAgendaUiState(
     val todayBr: String = ""
 )
 
-class SessionsViewModel @Inject constructor(
+class SessionsViewModel(
     private val sessionManager: SessionManager,
     private val scheduleManager: ScheduleManager,
     private val referralManager: ReferralManager,
@@ -152,22 +151,8 @@ class SessionsViewModel @Inject constructor(
 }
 
 @Composable
-fun rememberSessionsViewModel(): SessionsViewModel {
-    val container = com.healthcare.fonolab.core.di.LocalFonoLabContainer.current
-    return androidx.lifecycle.viewmodel.compose.viewModel {
-        SessionsViewModel(
-            sessionManager = container.sessionManager,
-            scheduleManager = container.scheduleManager,
-            referralManager = container.referralManager,
-            patientRepository = container.patientRepository,
-            dateTimeManager = container.dateTimeManager
-        )
-    }
-}
-
-@Composable
 fun SessionsScreen(
-    viewModel: SessionsViewModel = rememberSessionsViewModel(),
+    viewModel: SessionsViewModel,
     onSessionClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -429,7 +414,7 @@ private fun SessionsListContent(
         FonoPrimaryButton(
             text = "Planejar Sessão com Antecedência",
             onClick = onPlanClick,
-            icon = Icons.Default.EventNote,
+            icon = Icons.AutoMirrored.Filled.EventNote,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(12.dp))

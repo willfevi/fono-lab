@@ -1,31 +1,32 @@
 package com.healthcare.fonolab.shared
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import com.healthcare.fonolab.core.designsystem.theme.FonoLabTheme
-import com.healthcare.fonolab.core.di.DefaultFonoLabContainer
-import com.healthcare.fonolab.core.di.FonoLabContainer
-import com.healthcare.fonolab.core.di.LocalFonoLabContainer
+import com.healthcare.fonolab.core.di.fonoLabModule
 import com.healthcare.fonolab.core.navigation.FonoLabApp
 import com.healthcare.fonolab.core.platform.*
-import java.io.File
+import org.koin.compose.KoinApplication
+import org.koin.core.module.Module
+import org.koin.dsl.koinConfiguration
+import com.healthcare.fonolab.domain.files.File
 
 /**
- * Main cross-platform entry point for FonoLab Compose Multiplatform (Android & Desktop).
+ * Shared Compose entry point for Android, Windows and Web.
  */
 @Composable
 fun App(
     platformServices: PlatformServices? = null,
-    container: FonoLabContainer? = null
+    platformModule: Module? = null
 ) {
     val effectiveServices = platformServices ?: remember { createFallbackPlatformServices() }
-    val effectiveContainer: FonoLabContainer = container ?: remember { DefaultFonoLabContainer(clock = effectiveServices.clock) }
-
-    CompositionLocalProvider(
-        LocalPlatformServices provides effectiveServices,
-        LocalFonoLabContainer provides effectiveContainer
-    ) {
+    val configuration = remember(effectiveServices, platformModule) {
+        koinConfiguration {
+            allowOverride(false)
+            modules(listOfNotNull(fonoLabModule(effectiveServices), platformModule))
+        }
+    }
+    KoinApplication(configuration = configuration) {
         FonoLabTheme {
             FonoLabApp()
         }

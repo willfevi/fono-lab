@@ -1,5 +1,7 @@
 package com.healthcare.fonolab.feature.dashboard
 
+import com.healthcare.fonolab.domain.datetime.currentLocalDate
+import com.healthcare.fonolab.domain.datetime.dateFormatter
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -63,9 +65,6 @@ import com.healthcare.fonolab.core.designsystem.theme.MockupPurpleHero
 import com.healthcare.fonolab.core.designsystem.theme.MockupTextDark
 import com.healthcare.fonolab.core.designsystem.theme.MockupTextMuted
 import com.healthcare.fonolab.core.designsystem.theme.MockupYellowCard
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun DashboardScreen(
@@ -79,18 +78,17 @@ fun DashboardScreen(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedDate by remember { mutableStateOf(currentLocalDate()) }
 
     if (state.isLoading) {
         FonoLoadingScreen(message = "Preparando painel clínico...")
         return
     }
 
-    val ptBr = Locale.forLanguageTag("pt-BR")
     val formattedDate = remember {
-        val today = LocalDate.now()
-        val day = today.dayOfMonth
-        val month = today.format(DateTimeFormatter.ofPattern("MMM", ptBr)).replace(".", "")
+        val today = currentLocalDate()
+        val day = today.getDayOfMonth()
+        val month = today.format(dateFormatter("MMM")).replace(".", "")
         "Hoje, $day de $month"
     }
 

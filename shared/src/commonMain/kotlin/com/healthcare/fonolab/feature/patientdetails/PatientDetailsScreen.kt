@@ -1,6 +1,7 @@
 package com.healthcare.fonolab.feature.patientdetails
 
-import java.io.File
+import com.healthcare.fonolab.domain.files.File
+import com.healthcare.fonolab.domain.files.writeText
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -124,7 +127,7 @@ fun PatientDetailsScreen(
                                 .border(1.dp, MockupBorder, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Assignment, contentDescription = "Anamnese", tint = MockupDarkPill, modifier = Modifier.size(18.dp))
+                            Icon(Icons.AutoMirrored.Filled.Assignment, contentDescription = "Anamnese", tint = MockupDarkPill, modifier = Modifier.size(18.dp))
                         }
                     }
                     IconButton(onClick = { onNavigateToEdit(patient.id) }) {
@@ -257,7 +260,7 @@ fun PatientDetailsScreen(
                         FonoSecondaryButton(
                             text = "Planejar Sessão",
                             onClick = { showPlanSessionDialog = true },
-                            icon = Icons.Default.EventNote,
+                            icon = Icons.AutoMirrored.Filled.EventNote,
                             modifier = Modifier.weight(1f)
                         )
                         FonoPrimaryButton(
@@ -279,7 +282,7 @@ fun PatientDetailsScreen(
                 "Casa & SOAP",
                 "Linha do Tempo"
             )
-            ScrollableTabRow(
+            SecondaryScrollableTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = Color.Transparent,
                 contentColor = MockupDarkPill,
@@ -818,7 +821,7 @@ private fun OverviewAndAnamnesisTab(
                     FonoPrimaryButton(
                         text = if (anamnesis == null) "Preencher Anamnese (12 Seções + PDF)" else "Editar / Exportar Anamnese em PDF",
                         onClick = onOpenAnamnesis,
-                        icon = Icons.Default.Assignment,
+                        icon = Icons.AutoMirrored.Filled.Assignment,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -1073,7 +1076,7 @@ private fun AdvanceSessionsTab(
                     FonoPrimaryButton(
                         text = "Planejar Nova Sessão com Antecedência",
                         onClick = onPlanSession,
-                        icon = Icons.Default.EventNote,
+                        icon = Icons.AutoMirrored.Filled.EventNote,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

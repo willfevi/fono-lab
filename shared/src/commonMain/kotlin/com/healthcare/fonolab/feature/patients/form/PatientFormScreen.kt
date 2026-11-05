@@ -1,5 +1,7 @@
 package com.healthcare.fonolab.feature.patients.form
 
+import com.healthcare.fonolab.domain.datetime.dateFormatter
+import com.healthcare.fonolab.domain.datetime.utcDateAtEpochMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,7 +29,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DatePicker
@@ -71,9 +73,6 @@ import com.healthcare.fonolab.core.designsystem.theme.MockupSurface
 import com.healthcare.fonolab.core.designsystem.theme.MockupTextDark
 import com.healthcare.fonolab.core.designsystem.theme.MockupTextMuted
 import com.healthcare.fonolab.domain.patient.PatientValidationError
-import java.time.Instant
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -459,7 +458,7 @@ fun PatientFormScreen(
                 FonoPrimaryButton(
                     text = "Cadastrar e Iniciar Anamnese (12 Seções)",
                     onClick = { viewModel.save(openAnamnesisImmediately = true) },
-                    icon = Icons.Default.Assignment,
+                    icon = Icons.AutoMirrored.Filled.Assignment,
                     isLoading = state.isSaving,
                     enabled = !state.isSaving,
                     modifier = Modifier.fillMaxWidth()
@@ -495,10 +494,8 @@ fun PatientFormScreen(
                     onClick = {
                         val millis = datePickerState.selectedDateMillis
                         if (millis != null) {
-                            val selectedLocalDate = Instant.ofEpochMilli(millis)
-                                .atZone(ZoneOffset.UTC)
-                                .toLocalDate()
-                            val formattedBr = selectedLocalDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            val selectedLocalDate = utcDateAtEpochMillis(millis)
+                            val formattedBr = selectedLocalDate.format(dateFormatter("dd/MM/yyyy"))
                             viewModel.onBirthDateTextChange(formattedBr)
                         }
                         showBirthDatePicker = false

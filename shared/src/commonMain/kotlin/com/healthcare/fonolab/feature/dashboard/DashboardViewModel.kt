@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 data class DashboardUiState(
     val totalActivePatients: Int = 0,
@@ -28,7 +27,7 @@ data class DashboardUiState(
     val isLoading: Boolean = true
 )
 
-class DashboardViewModel @Inject constructor(
+class DashboardViewModel(
     private val patientRepository: PatientRepository,
     private val sessionRepository: TherapySessionRepository,
     qualityControlManager: QualityControlManager

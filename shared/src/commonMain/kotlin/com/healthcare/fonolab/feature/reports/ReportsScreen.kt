@@ -41,8 +41,8 @@ import com.healthcare.fonolab.domain.patient.PatientStatus
 import com.healthcare.fonolab.domain.session.TherapySessionRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.io.File
-import javax.inject.Inject
+import com.healthcare.fonolab.domain.files.File
+import com.healthcare.fonolab.domain.files.writeText
 
 data class ReportsAndAdminUiState(
     val patients: List<Patient> = emptyList(),
@@ -51,7 +51,7 @@ data class ReportsAndAdminUiState(
     val todayBr: String = ""
 )
 
-class ReportsViewModel @Inject constructor(
+class ReportsViewModel(
     patientRepository: PatientRepository,
     private val sessionRepository: TherapySessionRepository,
     private val billingManager: BillingManager,
@@ -82,7 +82,7 @@ class ReportsViewModel @Inject constructor(
             val file = File(exportDir, "Relatorio_${patient.internalCode}.txt")
             val attempts = sessionRepository.getAttemptsForPatient(patient.id)
             file.writeText("Relatório Clínico de ${patient.fullName} (${patient.internalCode}). Total de tentativas: ${attempts.size}")
-            onComplete(file.name)
+            onComplete(file.getName())
         }
     }
 
@@ -98,7 +98,7 @@ class ReportsViewModel @Inject constructor(
                 }
             }
             file.writeText(csvText)
-            onComplete(file.name)
+            onComplete(file.getName())
         }
     }
 
@@ -151,22 +151,8 @@ class ReportsViewModel @Inject constructor(
 }
 
 @Composable
-fun rememberDefaultReportsViewModel(): ReportsViewModel {
-    val container = com.healthcare.fonolab.core.di.LocalFonoLabContainer.current
-    return androidx.lifecycle.viewmodel.compose.viewModel {
-        ReportsViewModel(
-            patientRepository = container.patientRepository,
-            sessionRepository = container.sessionRepository,
-            billingManager = container.billingManager,
-            contentLibraryManager = container.contentLibraryManager,
-            dateTimeManager = container.dateTimeManager
-        )
-    }
-}
-
-@Composable
 fun ReportsScreen(
-    viewModel: ReportsViewModel = rememberDefaultReportsViewModel(),
+    viewModel: ReportsViewModel,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()

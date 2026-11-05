@@ -1,5 +1,6 @@
 package com.healthcare.fonolab.feature.games.play
 
+import com.healthcare.fonolab.domain.datetime.Clock
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,8 +34,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.Clock
-import javax.inject.Inject
 
 data class GamePlayUiState(
     val gameId: String,

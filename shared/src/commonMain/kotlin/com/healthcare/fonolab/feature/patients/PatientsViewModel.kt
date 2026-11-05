@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class PatientsListUiState(
     val patients: List<Patient> = emptyList(),
@@ -22,13 +21,14 @@ data class PatientsListUiState(
     val isLoading: Boolean = false
 )
 
-class PatientsViewModel @Inject constructor(
+class PatientsViewModel(
     private val repository: PatientRepository
 ) : ViewModel() {
 
     private val _query = MutableStateFlow("")
     private val _statusFilter = MutableStateFlow<PatientStatus?>(PatientStatus.ACTIVE)
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<PatientsListUiState> = combine(_query, _statusFilter) { q, status ->
         PatientFilter(query = q, status = status)
     }.flatMapLatest { filter ->

@@ -1,5 +1,6 @@
 package com.healthcare.fonolab.feature.patients
 
+import com.healthcare.fonolab.domain.datetime.currentLocalDate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +60,6 @@ import com.healthcare.fonolab.core.designsystem.theme.MockupTextMuted
 import com.healthcare.fonolab.domain.patient.AgeCalculator
 import com.healthcare.fonolab.domain.patient.Patient
 import com.healthcare.fonolab.domain.patient.PatientStatus
-import java.time.LocalDate
 
 @Composable
 fun PatientsScreen(
@@ -112,7 +112,7 @@ fun PatientsScreen(
                 value = state.query,
                 onValueChange = viewModel::onQueryChanged,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Buscar por nome do paciente...", color = MockupTextMuted) },
+                label = { Text("Buscar por nome do paciente", color = MockupTextMuted) },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Search,
@@ -193,7 +193,7 @@ fun PatientsScreen(
                     contentPadding = PaddingValues(bottom = 96.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(state.patients) { patient ->
+                    items(state.patients, key = { it.id }) { patient ->
                         PatientListItem(
                             patient = patient,
                             onClick = { onNavigateToPatientDetail(patient.id) }
@@ -210,7 +210,7 @@ private fun PatientListItem(
     patient: Patient,
     onClick: () -> Unit
 ) {
-    val age = AgeCalculator.ageOn(patient.birthDate, LocalDate.now())
+    val age = AgeCalculator.ageOn(patient.birthDate, currentLocalDate())
 
     FonoCard(
         onClick = onClick,

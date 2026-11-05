@@ -18,7 +18,6 @@ import com.healthcare.fonolab.domain.session.TherapySession
 import com.healthcare.fonolab.domain.session.TherapySessionRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class PatientDetailsUiState(
     val patient: Patient? = null,

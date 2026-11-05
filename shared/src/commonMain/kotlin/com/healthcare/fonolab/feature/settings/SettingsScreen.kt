@@ -34,14 +34,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class SettingsUiState(
     val profile: ProfessionalProfile = ProfessionalProfile(),
     val auditLogs: List<AuditEvent> = emptyList()
 )
 
-class SettingsViewModel @Inject constructor(
+class SettingsViewModel(
     private val patientRepository: PatientRepository,
     private val accountManager: AccountManager,
     auditManager: AuditManager
@@ -73,20 +72,8 @@ class SettingsViewModel @Inject constructor(
 }
 
 @Composable
-fun rememberSettingsViewModel(): SettingsViewModel {
-    val container = com.healthcare.fonolab.core.di.LocalFonoLabContainer.current
-    return androidx.lifecycle.viewmodel.compose.viewModel {
-        SettingsViewModel(
-            accountManager = AccountManager(container.platformRepository),
-            auditManager = AuditManager(container.platformRepository),
-            patientRepository = container.patientRepository
-        )
-    }
-}
-
-@Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel = rememberSettingsViewModel(),
+    viewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()

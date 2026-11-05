@@ -1,5 +1,6 @@
 package com.healthcare.fonolab.feature.sessions.hub
 
+import com.healthcare.fonolab.domain.datetime.Clock
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,8 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.Clock
-import javax.inject.Inject
 
 data class SessionHubUiState(
     val details: SessionWithDetails? = null,

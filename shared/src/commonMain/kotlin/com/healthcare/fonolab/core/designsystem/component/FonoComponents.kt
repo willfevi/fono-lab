@@ -1,5 +1,8 @@
 package com.healthcare.fonolab.core.designsystem.component
 
+import com.healthcare.fonolab.domain.datetime.isoWeekday
+import com.healthcare.fonolab.domain.datetime.LocalDate
+import com.healthcare.fonolab.domain.datetime.shortWeekdayPtBr
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -74,9 +77,6 @@ import com.healthcare.fonolab.core.designsystem.theme.MockupSurface
 import com.healthcare.fonolab.core.designsystem.theme.MockupTextDark
 import com.healthcare.fonolab.core.designsystem.theme.MockupTextMuted
 import com.healthcare.fonolab.core.designsystem.theme.MockupYellowCard
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
 
 /**
  * Floating Dark Capsule Pill Navigation Bar identical to the mockup.
@@ -364,10 +364,9 @@ fun CalendarWeekStrip(
     modifier: Modifier = Modifier
 ) {
     // Determine the week window around selectedDate (e.g., current week Monday to Sunday)
-    val dayOfWeek = selectedDate.dayOfWeek.value // 1 (Mon) to 7 (Sun)
+    val dayOfWeek = isoWeekday(selectedDate) // 1 (Mon) to 7 (Sun)
     val startOfWeek = selectedDate.minusDays((dayOfWeek - 1).toLong())
     val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
-    val ptBr = Locale.forLanguageTag("pt-BR")
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -384,10 +383,10 @@ fun CalendarWeekStrip(
         ) {
             weekDays.forEach { date ->
                 val isSelected = date == selectedDate
-                val dayShort = date.dayOfWeek.getDisplayName(TextStyle.SHORT, ptBr)
+                val dayShort = shortWeekdayPtBr(date)
                     .take(3)
                     .replaceFirstChar { it.uppercase() }
-                val dayNumber = date.dayOfMonth.toString()
+                val dayNumber = date.getDayOfMonth().toString()
 
                 val interactionSource = remember { MutableInteractionSource() }
 

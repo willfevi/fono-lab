@@ -1,5 +1,6 @@
 package com.healthcare.fonolab.feature.patients.form
 
+import com.healthcare.fonolab.domain.datetime.isAfter
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class PatientFormUiState(
     val patientId: Long? = null,

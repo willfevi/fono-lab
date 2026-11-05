@@ -1,13 +1,13 @@
 package com.healthcare.fonolab.core.platform
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.staticCompositionLocalOf
+import com.healthcare.fonolab.domain.datetime.Clock
+import com.healthcare.fonolab.domain.datetime.Instant
+import com.healthcare.fonolab.domain.datetime.LocalDate
+import com.healthcare.fonolab.domain.datetime.LocalDateTime
+import com.healthcare.fonolab.domain.datetime.systemClock
+import com.healthcare.fonolab.domain.datetime.ZoneId
 import com.healthcare.fonolab.domain.datetime.PlatformClock
-import java.io.File
-import java.time.Clock
-import java.time.Instant
-import java.time.ZoneId
+import com.healthcare.fonolab.domain.files.File
 
 /**
  * Multiplatform contract for audio synthesis (TTS) and auditory feedback cues.
@@ -84,11 +84,11 @@ class DefaultPlatformLogger : PlatformLogger {
 /**
  * Default standard system clock.
  */
-class DefaultPlatformClock(private val clock: Clock = Clock.system(ZoneId.of("America/Sao_Paulo"))) : PlatformClock {
+class DefaultPlatformClock(private val clock: Clock = systemClock("America/Sao_Paulo")) : PlatformClock {
     private val delegate = com.healthcare.fonolab.domain.datetime.SystemPlatformClock(clock)
     override fun nowInstant(): Instant = delegate.nowInstant()
-    override fun today(): java.time.LocalDate = delegate.today()
-    override fun currentDateTime(): java.time.LocalDateTime = delegate.currentDateTime()
+    override fun today(): LocalDate = delegate.today()
+    override fun currentDateTime(): LocalDateTime = delegate.currentDateTime()
     override fun zoneId(): ZoneId = delegate.zoneId()
 }
 
@@ -103,7 +103,3 @@ data class PlatformServices(
     val logger: PlatformLogger = DefaultPlatformLogger(),
     val clock: PlatformClock = DefaultPlatformClock()
 )
-
-val LocalPlatformServices: ProvidableCompositionLocal<PlatformServices> = staticCompositionLocalOf {
-    error("LocalPlatformServices not provided!")
-}
