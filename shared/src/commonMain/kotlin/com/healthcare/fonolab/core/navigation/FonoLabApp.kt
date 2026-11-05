@@ -103,12 +103,19 @@ fun FonoLabApp(
                         }
                     }
                 }
-                FonoLabNavHost(
-                    navController = navController,
+                Box(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
-                )
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    FonoLabNavHost(
+                        navController = navController,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .widthIn(max = 1280.dp)
+                    )
+                }
             }
         } else {
             // Compact Layout (Smartphone with Bottom Floating Pill Navigation)

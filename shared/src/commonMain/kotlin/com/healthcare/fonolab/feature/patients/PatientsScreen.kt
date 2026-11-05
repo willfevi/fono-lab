@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -70,8 +71,10 @@ fun PatientsScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val isCompact = maxWidth < 600.dp
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         containerColor = MockupBackground,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
@@ -80,7 +83,7 @@ fun PatientsScreen(
                 containerColor = MockupDarkPill,
                 contentColor = Color.White,
                 shape = CircleShape,
-                modifier = Modifier.padding(bottom = 76.dp)
+                modifier = Modifier.padding(bottom = if (isCompact) 76.dp else 24.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Novo Paciente")
             }
@@ -204,6 +207,7 @@ fun PatientsScreen(
         }
     }
 }
+    }
 
 @Composable
 private fun PatientListItem(
