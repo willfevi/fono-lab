@@ -1,15 +1,15 @@
 package com.healthcare.fonolab.web
 
+import com.healthcare.fonolab.domain.datetime.currentLocalDate
 import com.healthcare.fonolab.core.platform.*
-import java.io.File
-import java.time.LocalDate
+import com.healthcare.fonolab.domain.files.File
 
 @OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
 @JsFun("(filename, text) => { const blob = new Blob([text], {type: 'text/plain;charset=utf-8'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }")
 private external fun downloadTextFile(filename: String, text: String)
 
 @OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
-@JsFun("(text) => { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(err => console.error(err)); } }")
+@JsFun("(text) => { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(() => console.error('[WebClipboard] Erro ao copiar.')); } }")
 private external fun copyToClipboardJs(text: String)
 
 @OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
@@ -22,14 +22,11 @@ private external fun stopSpeechJs()
 
 class WebAudioService : PlatformAudioService {
     override fun speak(text: String, language: String, onDone: () -> Unit) {
-        println("[WebAudio] Fala sintetizada ($language): $text")
         speakJs(text, language)
         onDone()
     }
 
-    override fun playAuditoryCue(cueName: String) {
-        println("[WebAudio] Efeito auditivo: $cueName")
-    }
+    override fun playAuditoryCue(cueName: String) = Unit
 
     override fun stop() {
         stopSpeechJs()
@@ -54,7 +51,7 @@ class WebPdfExporter : PlatformPdfExporter {
                 appendLine()
                 appendLine("Paciente: $patientName")
                 appendLine("Código/Doc: $patientDoc")
-                appendLine("Data de Emissão: ${LocalDate.now()}")
+                appendLine("Data de Emissão: ${currentLocalDate()}")
                 appendLine()
                 sections.forEach { (sectionTitle, questions) ->
                     appendLine("------------------------------------------------------------")
@@ -93,7 +90,7 @@ class WebPdfExporter : PlatformPdfExporter {
                 appendLine()
                 appendLine("Paciente: $patientName")
                 appendLine("Título: $reportTitle")
-                appendLine("Data: ${LocalDate.now()}")
+                appendLine("Data: ${currentLocalDate()}")
                 appendLine()
                 appendLine(summaryContent)
                 appendLine()
@@ -111,12 +108,9 @@ class WebPdfExporter : PlatformPdfExporter {
 class WebShareManager : PlatformShareManager {
     override fun shareText(title: String, text: String) {
         copyToClipboardJs(text)
-        println("[WebShare] Texto copiado para área de transferência: $title")
     }
 
-    override fun shareFile(file: File, title: String, mimeType: String) {
-        println("[WebShare] Arquivo compartilhado: ${file.name}")
-    }
+    override fun shareFile(file: File, title: String, mimeType: String) = Unit
 }
 
 class WebClipboardManager : PlatformClipboardManager {

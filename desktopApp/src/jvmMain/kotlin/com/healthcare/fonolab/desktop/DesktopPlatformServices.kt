@@ -10,14 +10,12 @@ import java.io.FileWriter
 
 class DesktopAudioService : PlatformAudioService {
     override fun speak(text: String, language: String, onDone: () -> Unit) {
-        println("[DesktopAudio] Fala sintetizada ($language): $text")
         // Trigger system audio beep or native speech synthesis if available
         Toolkit.getDefaultToolkit().beep()
         onDone()
     }
 
     override fun playAuditoryCue(cueName: String) {
-        println("[DesktopAudio] Som clínico executado: $cueName")
         Toolkit.getDefaultToolkit().beep()
     }
 
@@ -98,7 +96,6 @@ class DesktopPdfExporter : PlatformPdfExporter {
 class DesktopShareManager : PlatformShareManager {
     override fun shareText(title: String, text: String) {
         DesktopClipboardManager().copyToClipboard(text)
-        println("[DesktopShare] Texto copiado para a área de transferência: $title")
     }
 
     override fun shareFile(file: File, title: String, mimeType: String) {
@@ -106,8 +103,8 @@ class DesktopShareManager : PlatformShareManager {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
                 Desktop.getDesktop().open(file.parentFile ?: file)
             }
-        } catch (e: Exception) {
-            println("[DesktopShare] Não foi possível abrir o explorador: ${e.message}")
+        } catch (_: Exception) {
+            println("[DesktopShare] Não foi possível abrir o explorador.")
         }
     }
 }
@@ -117,8 +114,8 @@ class DesktopClipboardManager : PlatformClipboardManager {
         try {
             val selection = StringSelection(text)
             Toolkit.getDefaultToolkit().systemClipboard.setContents(selection, selection)
-        } catch (e: Exception) {
-            System.err.println("[DesktopClipboard] Erro ao copiar: ${e.message}")
+        } catch (_: Exception) {
+            System.err.println("[DesktopClipboard] Erro ao copiar.")
         }
     }
 
