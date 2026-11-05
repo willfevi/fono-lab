@@ -85,15 +85,3 @@ Para iniciar o aplicativo desktop em tempo de desenvolvimento sem gerar os insta
 - **Armazenamento Seguro:** Isolamento por paciente e exclusão em cascata completa com auditoria.
 - **Tratamento Adequado de Dados:** Anonimização e máscaras em relatórios exportados.
 
----
-
-## 📚 Documentação Técnica
-
-Para guias aprofundados sobre a arquitetura e processos de compilação, consulte a pasta `docs/`:
-- [Arquitetura Frontend KMP & CMP](docs/architecture/frontend-kmp-cmp.md)
-- [Arquitetura da Plataforma Android](docs/architecture/platform-android.md)
-- [Arquitetura da Plataforma Windows Desktop](docs/architecture/platform-windows.md)
-- [Guia de Build Android](docs/build/build-android.md)
-- [Guia de Build Windows](docs/build/build-windows.md)
-- [Catálogo de Tarefas Gradle](docs/build/gradle-tasks.md)
-- [Troubleshooting & Soluções de Erros](docs/build/troubleshooting.md)

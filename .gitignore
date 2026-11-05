@@ -7,7 +7,6 @@ local.properties
 .DS_Store
 /build
 /build/
-!docs/build/
 app/build/
 core/data/build/
 core/domain/build/
@@ -24,3 +23,8 @@ dist/
 *.aab
 *.jks
 *.keystore
+
+# Configuracoes de agentes e documentacao interna (apenas local)
+.agents/
+AGENTS.md
+docs/
