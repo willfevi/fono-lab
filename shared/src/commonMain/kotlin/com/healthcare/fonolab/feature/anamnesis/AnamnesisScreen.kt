@@ -248,7 +248,7 @@ fun AnamnesisScreen(
                     IconButton(
                         onClick = {
                             if (patient != null) {
-                                val exportDir = File(System.getProperty("user.home") ?: ".", "Documents/FonoLab/Anamneses").apply { mkdirs() }
+                                val exportDir = File("Documents/FonoLab/Anamneses").apply { mkdirs() }
                                 val file = File(exportDir, "Anamnese_${patient.internalCode}_v${record.versionNumber}.txt")
                                 file.writeText("ANAMNESE CLINICA FONOAUDIOLOGICA\nPaciente: ${patient.fullName} (${patient.internalCode})\nInformante: ${record.informantName}\nResumo: ${record.generalSummary}")
                                 viewModel.notifyMessage("Anamnese gerada em: ${file.name}")
@@ -517,7 +517,7 @@ fun AnamnesisScreen(
                     text = "Exportar Anamnese Completa em PDF",
                     onClick = {
                         if (patient != null) {
-                            val exportDir = File(System.getProperty("user.home") ?: ".", "Documents/FonoLab/Anamneses").apply { mkdirs() }
+                            val exportDir = File("Documents/FonoLab/Anamneses").apply { mkdirs() }
                             val file = File(exportDir, "Anamnese_${patient.internalCode}_v${record.versionNumber}.txt")
                             file.writeText("ANAMNESE CLINICA FONOAUDIOLOGICA\nPaciente: ${patient.fullName} (${patient.internalCode})\nInformante: ${record.informantName}\nResumo: ${record.generalSummary}")
                             viewModel.notifyMessage("Anamnese gerada com sucesso: ${file.name}")

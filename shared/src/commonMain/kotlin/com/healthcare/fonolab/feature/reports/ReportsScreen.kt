@@ -42,7 +42,6 @@ import com.healthcare.fonolab.domain.session.TherapySessionRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 
 data class ReportsAndAdminUiState(
@@ -79,7 +78,7 @@ class ReportsViewModel @Inject constructor(
 
     fun exportPdf(patient: Patient, onComplete: (String) -> Unit) {
         viewModelScope.launch {
-            val exportDir = File(System.getProperty("user.home") ?: ".", "Documents/FonoLab/Exports").apply { mkdirs() }
+            val exportDir = File("Documents/FonoLab/Exports").apply { mkdirs() }
             val file = File(exportDir, "Relatorio_${patient.internalCode}.txt")
             val attempts = sessionRepository.getAttemptsForPatient(patient.id)
             file.writeText("Relatório Clínico de ${patient.fullName} (${patient.internalCode}). Total de tentativas: ${attempts.size}")
@@ -90,7 +89,7 @@ class ReportsViewModel @Inject constructor(
     fun exportCsv(patient: Patient, onComplete: (String) -> Unit) {
         viewModelScope.launch {
             val attempts = sessionRepository.getAttemptsForPatient(patient.id)
-            val dir = File(System.getProperty("user.home") ?: ".", "Documents/FonoLab/Exports").apply { mkdirs() }
+            val dir = File("Documents/FonoLab/Exports").apply { mkdirs() }
             val file = File(dir, "Tentativas_${patient.internalCode}.csv")
             val csvText = buildString {
                 appendLine("id,activityId,roundIndex,stimulusTarget,responseRecorded,cueLevel,timestamp")
@@ -98,7 +97,7 @@ class ReportsViewModel @Inject constructor(
                     appendLine("${a.id},${a.activityId},${a.roundIndex},\"${a.stimulusTarget}\",\"${a.responseRecorded}\",${a.cueLevel.name},${a.timestamp}")
                 }
             }
-            file.writeText(csvText, Charsets.UTF_8)
+            file.writeText(csvText)
             onComplete(file.name)
         }
     }

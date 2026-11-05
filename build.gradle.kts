@@ -22,6 +22,7 @@ val distAndroidReleaseDir = layout.projectDirectory.dir("dist/android/release")
 val distWindowsExeDir = layout.projectDirectory.dir("dist/windows/exe")
 val distWindowsMsiDir = layout.projectDirectory.dir("dist/windows/msi")
 val distWindowsPortableDir = layout.projectDirectory.dir("dist/windows/portable")
+val distWebDir = layout.projectDirectory.dir("dist/web")
 
 val buildAndroidDebugApk = tasks.register<Copy>("buildAndroidDebugApk") {
     group = "distribution"
@@ -117,10 +118,24 @@ val buildWindowsDistribution = tasks.register("buildWindowsDistribution") {
     }
 }
 
+
+val buildWebDistribution = tasks.register<Copy>("buildWebDistribution") {
+    group = "distribution"
+    description = "Gera a distribuicao web de producao (Wasm + JS + HTML) e copia para dist/web/"
+    dependsOn(":webApp:wasmJsBrowserDistribution")
+
+    from(layout.projectDirectory.dir("webApp/build/dist/wasmJs/productionExecutable"))
+    into(distWebDir)
+
+    doLast {
+        println("Distribuicao Web gerada com sucesso em: $destinationDir")
+    }
+}
+
 val buildAllDistributions = tasks.register("buildAllDistributions") {
     group = "distribution"
     description = "Gera todas as distribuicoes multiplataforma suportadas pelo ambiente (Android APKs e Windows Desktop)"
-    dependsOn(buildAndroidDebugApk, buildAndroidReleaseApk)
+    dependsOn(buildAndroidDebugApk, buildAndroidReleaseApk, buildWebDistribution)
     if (isWindowsHost) {
         dependsOn(buildWindowsDistribution)
     }
@@ -151,6 +166,16 @@ val verifyDesktopBuild = tasks.register("verifyDesktopBuild") {
     }
 }
 
+
+val verifyWebBuild = tasks.register("verifyWebBuild") {
+    group = "verification"
+    description = "Valida a compilacao dos alvos Web (:webApp e :shared wasmJs)"
+    dependsOn(":shared:compileKotlinWasmJs", ":webApp:compileKotlinWasmJs")
+    doLast {
+        println("Verificacao Web (WasmJs) concluida com sucesso!")
+    }
+}
+
 val verifySharedTests = tasks.register("verifySharedTests") {
     group = "verification"
     description = "Executa os testes unitarios compartilhados da arquitetura KMP (:core:domain:test)"
@@ -163,7 +188,7 @@ val verifySharedTests = tasks.register("verifySharedTests") {
 val verifyAllPlatforms = tasks.register("verifyAllPlatforms") {
     group = "verification"
     description = "Executa todas as verificacoes de compilacao e testes multiplataforma (Android, Desktop e Shared)"
-    dependsOn(verifyAndroidBuild, verifyDesktopBuild, verifySharedTests)
+    dependsOn(verifyAndroidBuild, verifyDesktopBuild, verifyWebBuild, verifySharedTests)
     doLast {
         println("Verificacao completa de todas as plataformas aprovada com 100% de sucesso!")
     }

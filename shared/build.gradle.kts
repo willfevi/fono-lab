@@ -17,6 +17,9 @@ kotlin {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
+    wasmJs {
+        browser()
+    }
 
     sourceSets {
         commonMain.dependencies {

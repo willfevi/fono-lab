@@ -33,7 +33,8 @@ class InternalCodeGenerator @Inject constructor(
     fun generate(): String {
         val year = LocalDate.now(clock).year % 100
         val suffix = (1..SUFFIX_LENGTH).map { ALPHABET[random.nextInt(ALPHABET.length)] }.joinToString("")
-        return "FL-%02d-%s".format(year, suffix)
+        val yStr = year.toString().padStart(2, '0')
+        return "FL-$yStr-$suffix"
     }
 
     private companion object {

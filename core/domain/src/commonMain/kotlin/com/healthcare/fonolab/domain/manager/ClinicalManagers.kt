@@ -1160,7 +1160,10 @@ class BillingManager @Inject constructor(
                 createdAt = dateTimeManager.nowInstant()
             )
         )
-        auditManager.log("BILLING", id, "CREATE", "Lançamento financeiro de R$ %.2f para $patientName.".format(amountBrlReais))
+        val totalCents = (amountBrlReais * 100).toInt()
+        val r = totalCents / 100
+        val c = kotlin.math.abs(totalCents % 100).toString().padStart(2, '0')
+        auditManager.log("BILLING", id, "CREATE", "Lançamento financeiro de R$ $r,$c para $patientName.")
         return id
     }
 

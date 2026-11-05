@@ -13,6 +13,8 @@ core/data/build/
 core/domain/build/
 shared/build/
 desktopApp/build/
+webApp/build/
+kotlin-js-store/
 dist/
 /dist
 /captures

@@ -425,7 +425,7 @@ data class BillingRecord(
     fun formattedAmountBrl(): String {
         val reais = amountCents / 100
         val centavos = kotlin.math.abs(amountCents % 100)
-        return "R$ %d,%02d".format(reais, centavos)
+        return "R$ $reais,${centavos.toString().padStart(2, '0')}"
     }
 }
 

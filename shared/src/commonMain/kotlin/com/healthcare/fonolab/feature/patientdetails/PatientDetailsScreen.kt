@@ -330,7 +330,7 @@ fun PatientDetailsScreen(
                     onUpdateHomeFeedback = viewModel::updateHomePracticeFeedback,
                     onNewDocument = { showNewDocumentDialog = true },
                     onExportDocumentPdf = { doc ->
-                        val exportDir = File(System.getProperty("user.home") ?: ".", "Documents/FonoLab/Documentos").apply { mkdirs() }
+                        val exportDir = File("Documents/FonoLab/Documentos").apply { mkdirs() }
                         val file = File(exportDir, "${doc.title.replace(" ", "_")}_${patient.internalCode}.txt")
                         file.writeText("DOCUMENTO CLINICO: ${doc.title}\nPaciente: ${patient.fullName}\n\n${doc.bodyContent}")
                         viewModel.createClinicalDocument(
