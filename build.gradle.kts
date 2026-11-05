@@ -1,21 +1,18 @@
-import org.gradle.internal.os.OperatingSystem
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.android.kmp.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.compose.multiplatform) apply false
     alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.hilt) apply false
     alias(libs.plugins.room) apply false
 }
 
-val isWindowsHost = OperatingSystem.current().isWindows
+val isWindowsHost = providers.systemProperty("os.name").get().startsWith("Windows", ignoreCase = true)
 
 val distAndroidDebugDir = layout.projectDirectory.dir("dist/android/debug")
 val distAndroidReleaseDir = layout.projectDirectory.dir("dist/android/release")
@@ -150,8 +147,8 @@ val buildAllDistributions = tasks.register("buildAllDistributions") {
 
 val verifyAndroidBuild = tasks.register("verifyAndroidBuild") {
     group = "verification"
-    description = "Valida a compilacao de todos os alvos Android (:app e :shared androidTarget)"
-    dependsOn(":shared:compileDebugSources", ":app:compileDebugSources")
+    description = "Valida a compilacao do app Android e dos alvos Android KMP"
+    dependsOn(":core:domain:compileAndroidMain", ":shared:compileAndroidMain", ":app:compileDebugSources")
     doLast {
         println("Verificacao Android concluida com sucesso!")
     }
@@ -178,18 +175,12 @@ val verifyWebBuild = tasks.register("verifyWebBuild") {
 
 val verifySharedTests = tasks.register("verifySharedTests") {
     group = "verification"
-    description = "Executa os testes unitarios compartilhados da arquitetura KMP (:core:domain:test)"
-    dependsOn(":core:domain:test")
-    doLast {
-        println("Testes compartilhados executados com sucesso!")
-    }
+    description = "Executa os testes do dominio KMP no host Android"
+    dependsOn(":core:domain:testAndroidHostTest")
 }
 
 val verifyAllPlatforms = tasks.register("verifyAllPlatforms") {
     group = "verification"
-    description = "Executa todas as verificacoes de compilacao e testes multiplataforma (Android, Desktop e Shared)"
+    description = "Compila Android, Windows e Web e executa a verificacao do dominio no host Android"
     dependsOn(verifyAndroidBuild, verifyDesktopBuild, verifyWebBuild, verifySharedTests)
-    doLast {
-        println("Verificacao completa de todas as plataformas aprovada com 100% de sucesso!")
-    }
 }
