@@ -29,11 +29,16 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.swing)
 }
 
 compose.desktop {
     application {
         mainClass = "com.healthcare.fonolab.desktop.MainKt"
+        val jdk17 = file("C:/Program Files/Java/jdk-17")
+        if (jdk17.exists()) {
+            javaHome = jdk17.absolutePath
+        }
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Msi)
             packageName = "FonoLab"
