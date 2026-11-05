@@ -81,7 +81,7 @@ fun PatientDetailsScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MockupBackground,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        contentWindowInsets = WindowInsets.statusBars.union(WindowInsets.navigationBars),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
@@ -169,7 +169,7 @@ fun PatientDetailsScreen(
                         }
                     }
                 },
-                windowInsets = WindowInsets(0, 0, 0, 0),
+                windowInsets = TopAppBarDefaults.windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MockupBackground)
             )
         }
@@ -178,6 +178,7 @@ fun PatientDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .consumeWindowInsets(padding)
         ) {
             // Patient Compact Hero Card
             FonoCard(

@@ -85,9 +85,11 @@ fun SessionHubScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MockupBackground,
+        contentWindowInsets = WindowInsets.statusBars.union(WindowInsets.navigationBars),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
+                windowInsets = TopAppBarDefaults.windowInsets,
                 title = {
                     Text(
                         text = "Sessão #${session.id} (${session.status.displayName})",
@@ -113,6 +115,7 @@ fun SessionHubScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .consumeWindowInsets(padding)
                 .padding(horizontal = 20.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {

@@ -90,7 +90,12 @@ fun FonoLabApp(
 
         if (isTabletOrDesktop) {
             // Adaptive Medium/Expanded Layout (Tablet & Desktop Persistent Navigation Rail / Sidebar)
-            Row(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+            ) {
                 if (isTopLevelDestination) {
                     NavigationRail(
                         containerColor = MockupSurface,
@@ -115,14 +120,26 @@ fun FonoLabApp(
             }
         } else {
             // Compact Layout (Smartphone with Bottom Floating Pill Navigation)
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(
+                        if (isTopLevelDestination) Modifier.statusBarsPadding()
+                        else Modifier
+                    )
+            ) {
                 FonoLabNavHost(
                     navController = navController,
                     modifier = Modifier
                         .fillMaxSize()
                         .then(
-                            if (isTopLevelDestination) Modifier.padding(bottom = 80.dp)
-                            else Modifier
+                            if (isTopLevelDestination) {
+                                Modifier
+                                    .navigationBarsPadding()
+                                    .padding(bottom = 88.dp)
+                            } else {
+                                Modifier
+                            }
                         )
                 )
 
