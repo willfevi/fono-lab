@@ -21,6 +21,7 @@ val distAndroidDebugDir = layout.projectDirectory.dir("dist/android/debug")
 val distAndroidReleaseDir = layout.projectDirectory.dir("dist/android/release")
 val distWindowsExeDir = layout.projectDirectory.dir("dist/windows/exe")
 val distWindowsMsiDir = layout.projectDirectory.dir("dist/windows/msi")
+val distWindowsPortableDir = layout.projectDirectory.dir("dist/windows/portable")
 
 val buildAndroidDebugApk = tasks.register<Copy>("buildAndroidDebugApk") {
     group = "distribution"
@@ -55,7 +56,9 @@ val buildWindowsExe = tasks.register<Copy>("buildWindowsExe") {
     description = "Gera o instalador .exe do Windows e copia para dist/windows/exe/"
     if (isWindowsHost) {
         dependsOn(":desktopApp:packageExe")
-        from(layout.projectDirectory.file("desktopApp/build/compose/binaries/main/exe/FonoLab-1.0.0.exe"))
+        from(layout.projectDirectory.dir("desktopApp/build/compose/binaries/main/exe")) {
+            include("*.exe")
+        }
         into(distWindowsExeDir)
         rename { "fonolab-installer.exe" }
         doLast {
@@ -73,7 +76,9 @@ val buildWindowsMsi = tasks.register<Copy>("buildWindowsMsi") {
     description = "Gera o instalador .msi do Windows e copia para dist/windows/msi/"
     if (isWindowsHost) {
         dependsOn(":desktopApp:packageMsi")
-        from(layout.projectDirectory.file("desktopApp/build/compose/binaries/main/msi/FonoLab-1.0.0.msi"))
+        from(layout.projectDirectory.dir("desktopApp/build/compose/binaries/main/msi")) {
+            include("*.msi")
+        }
         into(distWindowsMsiDir)
         rename { "fonolab-installer.msi" }
         doLast {
@@ -86,10 +91,27 @@ val buildWindowsMsi = tasks.register<Copy>("buildWindowsMsi") {
     }
 }
 
+val buildWindowsPortable = tasks.register<Copy>("buildWindowsPortable") {
+    group = "distribution"
+    description = "Gera o aplicativo Windows portatil (executavel direto sem instalador) em dist/windows/portable/FonoLab/"
+    if (isWindowsHost) {
+        dependsOn(":desktopApp:packageAppImage")
+        from(layout.projectDirectory.dir("desktopApp/build/compose/binaries/main/app/FonoLab"))
+        into(distWindowsPortableDir.dir("FonoLab"))
+        doLast {
+            println("Aplicativo Windows portatil gerado em: $destinationDir/FonoLab.exe")
+        }
+    } else {
+        doLast {
+            println("AVISO: Geracao de versao portatil para Windows requer ambiente Windows.")
+        }
+    }
+}
+
 val buildWindowsDistribution = tasks.register("buildWindowsDistribution") {
     group = "distribution"
-    description = "Gera a distribuicao completa para Windows (executavel e instalador)"
-    dependsOn(buildWindowsExe, buildWindowsMsi)
+    description = "Gera a distribuicao completa para Windows (executavel portatil e instaladores)"
+    dependsOn(buildWindowsPortable, buildWindowsExe, buildWindowsMsi)
     doLast {
         println("Distribuicao Windows concluida com sucesso!")
     }

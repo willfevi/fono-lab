@@ -40,9 +40,9 @@ compose.desktop {
             javaHome = jdk17.absolutePath
         }
         nativeDistributions {
-            targetFormats(TargetFormat.Exe, TargetFormat.Msi)
+            targetFormats(TargetFormat.Exe, TargetFormat.Msi, TargetFormat.AppImage)
             packageName = "FonoLab"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
             description = "FonoLab - Plataforma de Gestao Fonoaudiologica e Terapia Gamificada"
             vendor = "FonoLab Healthcare"
             copyright = "© 2026 FonoLab. Todos os direitos reservados."
