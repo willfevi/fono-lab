@@ -25,8 +25,7 @@ O arquivo `desktopApp/src/jvmMain/kotlin/com/healthcare/fonolab/desktop/Main.kt`
 
 ```kotlin
 fun main() = application {
-    val platformServices = createDesktopPlatformServices()
-    val container = DefaultFonoLabContainer(clock = platformServices.clock)
+    val platformServices = remember { createDesktopPlatformServices() }
     val windowState = rememberWindowState(width = 1280.dp, height = 820.dp)
 
     Window(
@@ -36,12 +35,7 @@ fun main() = application {
     ) {
         window.minimumSize = Dimension(800, 600)
 
-        CompositionLocalProvider(
-            LocalPlatformServices provides platformServices,
-            LocalFonoLabContainer provides container
-        ) {
-            App(platformServices = platformServices, container = container)
-        }
+        App(platformServices = platformServices)
     }
 }
 ```

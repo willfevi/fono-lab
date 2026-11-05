@@ -2,7 +2,7 @@
 
 ## 1. Visão Geral
 
-O **FonoLab** adota uma estratégia de código unificado baseada em **Kotlin Multiplatform (KMP)** e **Compose Multiplatform (CMP)**. A camada visual e as regras de negócio clínicas residem no módulo compartilhado `:shared`, permitindo que tanto a aplicação Android (`:app`) quanto a versão Desktop Windows (`:desktopApp`) compartilhem 100% da identidade visual, fluxo de navegação e lógica de domínio.
+O **FonoLab** usa Kotlin Multiplatform e Compose Multiplatform. Android, Windows e Web/Wasm compartilham a interface e a navegação em `:shared` e as regras clínicas em `:core:domain`.
 
 ```
                       ┌────────────────────────────────────────┐
@@ -10,14 +10,9 @@ O **FonoLab** adota uma estratégia de código unificado baseada em **Kotlin Mul
                       │   (Universal Compose Multiplatform)    │
                       └──────────────────┬─────────────────────┘
                                          │
-                 ┌───────────────────────┴───────────────────────┐
-                 ▼                                               ▼
-     ┌────────────────────────┐                     ┌────────────────────────┐
-     │      Android (:app)    │                     │  Desktop (:desktopApp) │
-     │  - Activity Android    │                     │  - Window AWT/Compose  │
-     │  - Room SQLite local   │                     │  - In-Memory / SQLite  │
-     │  - TTS & Audio Android │                     │  - Desktop Platform    │
-     └────────────────────────┘                     └────────────────────────┘
+                 ┌───────────────────────┼───────────────────────┐
+                 ▼                       ▼                       ▼
+           Android (:app)      Windows (:desktopApp)       Web (:webApp)
 ```
 
 ---
@@ -25,9 +20,10 @@ O **FonoLab** adota uma estratégia de código unificado baseada em **Kotlin Mul
 ## 2. Estrutura Modular
 
 - **`:shared` (KMP/CMP Library)**:
-  - `commonMain`: Contém a raiz da UI compartilhada (`App()`), o Design System completo (`com.healthcare.fonolab.core.designsystem.*`), todas as 11 telas clínicas (`Dashboard`, `Patients`, `PatientForm`, `PatientDetails`, `Anamnesis`, `Sessions`, `SessionHub`, `Reports`, `Settings`, `GameCatalog`, `GamePlay`), os 10 motores gamificados de reabilitação fonoaudiológica, gerenciadores de injeção de dependência (`FonoLabContainer`, `DefaultFonoLabContainer`) e abstrações multiplataforma (`PlatformServices`).
+  - `commonMain`: Contém a raiz da UI compartilhada (`App()`), o Design System, as telas clínicas, os 10 motores de jogos, o módulo de dependências Koin (`FonoLabModule.kt`) e as abstrações de plataforma (`PlatformServices`).
   - `androidTarget`: Compilado para bytecode compatível com Android DEX (AAR).
   - `desktop (jvm)`: Compilado para Java Virtual Machine direcionado a Windows, macOS e Linux.
+  - `wasmJs`: Compilado para execução no navegador.
 
 - **`:core:domain` (Pure Kotlin)**:
   - Modelos de domínio imutáveis (`Patient`, `TherapySession`, `ClinicalGoal`, `AnamnesisRecord`, `GameAttempt`).
@@ -44,7 +40,12 @@ O **FonoLab** adota uma estratégia de código unificado baseada em **Kotlin Mul
   - Serviços de plataforma nativos para Desktop (`DesktopAudioService`, `DesktopPdfExporter`, `DesktopShareManager`, `DesktopClipboardManager`).
 
 - **`:app` (Android Entrypoint)**:
-  - `MainActivity` herdando de `ComponentActivity`, configurando `enableEdgeToEdge()` e renderizando `App()`.
+  - `MainActivity` configura edge-to-edge e entrega a `App()` o módulo Android Room qualificado como `room`.
+
+- **`:webApp` (Web/Wasm Entrypoint)**:
+  - `main()` fornece os serviços do navegador e renderiza `App()` via `ComposeViewport`.
+
+A raiz Compose cria o grafo Koin. Os repositórios ativos e os casos de uso são registrados no módulo compartilhado, e os ViewModels são resolvidos no escopo de cada destino de navegação. O módulo Room do Android tem bindings qualificados e resolução sob demanda.
 
 ---
 

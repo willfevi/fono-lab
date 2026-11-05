@@ -14,7 +14,7 @@ O projeto segue Clean Architecture e Domain-Driven Design (DDD) modularizado:
 FonoLab/
 ├── :shared            # Módulo KMP com Compose Multiplatform (UI, telas, Design System, jogos)
 ├── :desktopApp        # Aplicação Desktop Windows nativa (.exe e .msi com jpackage)
-├── :app               # Aplicação Android (Material 3, Hilt, Room Database local)
+├── :app               # Aplicação Android (Material 3, Koin, adaptador Room local)
 ├── :core:domain       # Regras de negócio puras, modelos de domínio, casos de uso e gerenciadores clínicos
 └── :core:data         # Implementação de persistência local Room SQLite para Android
 ```
@@ -42,7 +42,7 @@ O projeto conta com tarefas Gradle integradas para compilação, validação con
 |---|---|
 | `.\gradlew.bat verifyAndroidBuild` | Compilação de todos os alvos Android (`:app` e `:shared`) |
 | `.\gradlew.bat verifyDesktopBuild` | Compilação dos alvos Desktop Windows (`:desktopApp` e `:shared`) |
-| `.\gradlew.bat verifySharedTests` | Bateria completa de testes unitários clínicos em `:core:domain` |
+| `.\gradlew.bat verifySharedTests` | Testes do domínio KMP configurados para o host Android |
 | `.\gradlew.bat verifyAllPlatforms` | Verificação global de compilação cruzada e testes em uma única passada |
 
 ---

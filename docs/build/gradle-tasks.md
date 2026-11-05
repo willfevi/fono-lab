@@ -21,10 +21,15 @@ Este documento descreve todas as tarefas customizadas de distribuição e verifi
 
 | Tarefa | Dependências | Descrição |
 |---|---|---|
-| `verifyAndroidBuild` | `:shared:compileDebugSources`, `:app:compileDebugSources` | Valida a compilação do código Android sem empacotar os APKs. |
+| `verifyAndroidBuild` | `:core:domain:compileAndroidMain`, `:shared:compileAndroidMain`, `:app:compileDebugSources` | Valida os alvos Android KMP e o aplicativo sem empacotar o APK. |
 | `verifyDesktopBuild` | `:shared:compileKotlinDesktop`, `:desktopApp:compileKotlin` | Valida a compilação do código Desktop sem gerar instaladores. |
-| `verifySharedTests` | `:core:domain:test` | Executa todos os testes unitários da arquitetura e regras de negócio clínicas. |
-| `verifyAllPlatforms` | `verifyAndroidBuild`, `verifyDesktopBuild`, `verifySharedTests` | Executa a bateria completa de checagem contínua para todas as plataformas. |
+| `verifyWebBuild` | `:shared:compileKotlinWasmJs`, `:webApp:compileKotlinWasmJs` | Valida a compilação Web/Wasm. |
+| `verifySharedTests` | `:core:domain:testAndroidHostTest` | Executa os testes do domínio KMP configurados para o host Android. |
+| `verifyAllPlatforms` | `verifyAndroidBuild`, `verifyDesktopBuild`, `verifyWebBuild`, `verifySharedTests` | Compila os três alvos e roda a verificação de testes no host Android. |
+
+Execute `:app:testDebugUnitTest` para os testes Android do aplicativo e `:core:domain:desktopTest` para a suíte Desktop.
+
+Se o empacotamento Windows em modo offline falhar em `:downloadWix` por acesso a `Task.project`, execute a distribuição com `--no-configuration-cache`. A tarefa pertence ao plugin Compose Desktop.
 
 ---
 

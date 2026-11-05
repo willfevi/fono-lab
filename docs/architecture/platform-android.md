@@ -13,7 +13,7 @@ O módulo `:app` empacota a aplicação móvel Android do **FonoLab**, projetada
 - **Min SDK**: `26` (garante suporte nativo à API `java.time`, segurança biométrica e notificações estáveis).
 - **Target SDK**: `37` (compatibilidade total com as diretrizes mais recentes do Google Play).
 - **Java / Kotlin**: Java 17 bytecode, Kotlin 2.3.x com Compose Compiler integrado.
-- **Injeção de Dependências**: Hilt (Dagger) para orquestração de ciclo de vida e DAOs locais.
+- **Injeção de Dependências**: Koin na raiz Compose. O módulo Room Android registra os DAOs e os repositórios qualificados como `room`. A UI continua usando os repositórios em memória até a validação da migração do banco.
 - **Persistência**: Room Database SQLite criptografável e reativo via `StateFlow` e `Flow`.
 
 ---
