@@ -1,8 +1,4 @@
-package java.time.format
-
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.Locale
+package com.healthcare.fonolab.domain.datetime.wasm
 
 enum class ResolverStyle {
     STRICT, SMART, LENIENT

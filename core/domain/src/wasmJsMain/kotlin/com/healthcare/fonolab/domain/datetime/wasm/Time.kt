@@ -1,8 +1,4 @@
-package java.time
-
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
+package com.healthcare.fonolab.domain.datetime.wasm
 
 internal fun isLeapYear(year: Int): Boolean =
     (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
@@ -71,16 +67,18 @@ enum class DayOfWeek {
     }
 }
 
-open class ZoneId(val id: String) {
+sealed class ZoneId(val id: String) {
     companion object {
-        fun of(zoneId: String): ZoneId = ZoneId(zoneId)
-        fun systemDefault(): ZoneId = ZoneId("America/Sao_Paulo")
+        fun of(zoneId: String): ZoneId = NamedZoneId(zoneId)
+        fun systemDefault(): ZoneId = of("America/Sao_Paulo")
     }
 
     override fun equals(other: Any?): Boolean = other is ZoneId && other.id == id
     override fun hashCode(): Int = id.hashCode()
     override fun toString(): String = id
 }
+
+private class NamedZoneId(id: String) : ZoneId(id)
 
 class ZoneOffset(id: String) : ZoneId(id) {
     companion object {
@@ -140,6 +138,9 @@ data class LocalDate(
         require(monthValue in 1..12) { "Mês inválido: $monthValue" }
         require(dayOfMonth in 1..lengthOfMonth(year, monthValue)) { "Dia inválido: $dayOfMonth para o mês $monthValue/$year" }
     }
+
+    fun getYear(): Int = year
+    fun getDayOfMonth(): Int = dayOfMonth
 
     val dayOfWeek: DayOfWeek
         get() {

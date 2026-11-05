@@ -1,11 +1,11 @@
 package com.healthcare.fonolab.domain.clinical
 
+import com.healthcare.fonolab.domain.datetime.Instant
+import com.healthcare.fonolab.domain.datetime.LocalDate
 import com.healthcare.fonolab.domain.common.DifficultyLevel
 import com.healthcare.fonolab.domain.common.PhonemePosition
 import com.healthcare.fonolab.domain.goal.ClinicalArea
 import com.healthcare.fonolab.domain.performance.CueLevel
-import java.time.Instant
-import java.time.LocalDate
 
 // ============================================================================
 // 1. ANAMNESIS (12 STRUCTURED SPEECH-LANGUAGE PATHOLOGY SECTIONS + VERSIONING)

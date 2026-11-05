@@ -1,6 +1,7 @@
 package com.healthcare.fonolab.domain.reward
 
-import java.time.Instant
+import com.healthcare.fonolab.domain.datetime.Instant
+
 
 data class RewardProgress(
     val patientId: Long,

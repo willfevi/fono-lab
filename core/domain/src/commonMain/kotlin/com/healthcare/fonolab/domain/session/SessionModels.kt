@@ -1,7 +1,7 @@
 package com.healthcare.fonolab.domain.session
 
+import com.healthcare.fonolab.domain.datetime.Instant
 import com.healthcare.fonolab.domain.goal.ClinicalGoal
-import java.time.Instant
 
 enum class SessionStatus(val displayName: String) {
     DRAFT("Rascunho"),

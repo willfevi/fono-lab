@@ -1,13 +1,12 @@
 package com.healthcare.fonolab.domain.patient
 
+import com.healthcare.fonolab.domain.datetime.Clock
+import com.healthcare.fonolab.domain.datetime.Instant
 import com.healthcare.fonolab.domain.common.DomainError
 import com.healthcare.fonolab.domain.common.DomainResult
 import com.healthcare.fonolab.domain.common.EntityType
 import com.healthcare.fonolab.domain.common.storageCall
 import kotlinx.coroutines.flow.Flow
-import java.time.Clock
-import java.time.Instant
-import javax.inject.Inject
 
 interface PatientRepository {
     fun observePatients(filter: PatientFilter): Flow<List<Patient>>
@@ -25,7 +24,7 @@ interface PatientRepository {
     suspend fun isInternalCodeInUse(code: String): Boolean
 }
 
-class SavePatientUseCase @Inject constructor(
+class SavePatientUseCase(
     private val repository: PatientRepository,
     private val validator: PatientValidator,
     private val codeGenerator: InternalCodeGenerator,
@@ -65,7 +64,7 @@ class SavePatientUseCase @Inject constructor(
     }
 }
 
-class ChangePatientStatusUseCase @Inject constructor(
+class ChangePatientStatusUseCase(
     private val repository: PatientRepository,
     private val clock: Clock,
 ) {
@@ -77,7 +76,7 @@ class ChangePatientStatusUseCase @Inject constructor(
     }
 }
 
-class DeletePatientUseCase @Inject constructor(private val repository: PatientRepository) {
+class DeletePatientUseCase(private val repository: PatientRepository) {
     suspend fun impact(patientId: Long): DomainResult<PatientDeletionImpact> =
         storageCall { repository.deletionImpact(patientId) }
 

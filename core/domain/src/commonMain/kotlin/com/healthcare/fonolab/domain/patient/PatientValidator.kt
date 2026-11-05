@@ -1,14 +1,16 @@
 package com.healthcare.fonolab.domain.patient
 
+import com.healthcare.fonolab.domain.datetime.Clock
+import com.healthcare.fonolab.domain.datetime.currentLocalDate
+import com.healthcare.fonolab.domain.datetime.isAfter
+import com.healthcare.fonolab.domain.datetime.isBefore
+import com.healthcare.fonolab.domain.datetime.LocalDate
 import com.healthcare.fonolab.domain.common.DomainError
 import com.healthcare.fonolab.domain.common.DomainResult
 import com.healthcare.fonolab.domain.common.ValidationIssue
 import com.healthcare.fonolab.domain.datetime.DateErrorReason
 import com.healthcare.fonolab.domain.datetime.DateTimeManager
 import com.healthcare.fonolab.domain.datetime.DateValidationResult
-import java.time.Clock
-import java.time.LocalDate
-import javax.inject.Inject
 
 enum class PatientField {
     FULL_NAME,
@@ -36,12 +38,12 @@ enum class PatientValidationError(val field: PatientField) : ValidationIssue {
 }
 
 /** Validates and normalizes patient form input. Optional fields never block registration. */
-class PatientValidator @Inject constructor(private val clock: Clock) {
+class PatientValidator(private val clock: Clock) {
 
     private val dateTimeManager = DateTimeManager(clock)
 
     fun validate(draft: PatientDraft): DomainResult<ValidPatientData> {
-        val today = LocalDate.now(clock)
+        val today = currentLocalDate(clock)
         val errors = mutableListOf<PatientValidationError>()
         val name = draft.fullName.trim().replace(WHITESPACE, " ")
 

@@ -1,5 +1,8 @@
 package com.healthcare.fonolab.domain.session
 
+import com.healthcare.fonolab.domain.datetime.Clock
+import com.healthcare.fonolab.domain.datetime.Instant
+import com.healthcare.fonolab.domain.datetime.secondsBetween
 import com.healthcare.fonolab.domain.common.DomainError
 import com.healthcare.fonolab.domain.common.DomainResult
 import com.healthcare.fonolab.domain.common.EntityType
@@ -7,9 +10,6 @@ import com.healthcare.fonolab.domain.common.InvalidStateReason
 import com.healthcare.fonolab.domain.common.storageCall
 import com.healthcare.fonolab.domain.performance.GameAttempt
 import kotlinx.coroutines.flow.Flow
-import java.time.Clock
-import java.time.Instant
-import javax.inject.Inject
 
 interface TherapySessionRepository {
     fun observeSessionsForPatient(patientId: Long): Flow<List<TherapySession>>
@@ -74,7 +74,7 @@ interface TherapySessionRepository {
  * CRITICAL RULE: A planned session NEVER starts automatically upon creation and NEVER counts
  * as a completed clinical session.
  */
-class PlanSessionUseCase @Inject constructor(
+class PlanSessionUseCase(
     private val repository: TherapySessionRepository,
     private val clock: Clock
 ) {
@@ -120,7 +120,7 @@ class PlanSessionUseCase @Inject constructor(
 /**
  * Transitions a PLANNED, DRAFT, or PAUSED session to IN_PROGRESS only when the clinician explicitly starts it.
  */
-class StartPlannedSessionUseCase @Inject constructor(
+class StartPlannedSessionUseCase(
     private val repository: TherapySessionRepository,
     private val clock: Clock
 ) {
@@ -151,7 +151,7 @@ class StartPlannedSessionUseCase @Inject constructor(
     }
 }
 
-class PauseSessionUseCase @Inject constructor(
+class PauseSessionUseCase(
     private val repository: TherapySessionRepository,
     private val clock: Clock
 ) {
@@ -165,7 +165,7 @@ class PauseSessionUseCase @Inject constructor(
 
         val now = clock.instant()
         val started = details.session.startedAt ?: now
-        val elapsed = maxOf(0L, java.time.Duration.between(started, now).seconds)
+        val elapsed = maxOf(0L, secondsBetween(started, now))
 
         return storageCall {
             repository.updateSessionStatus(
@@ -180,7 +180,7 @@ class PauseSessionUseCase @Inject constructor(
     }
 }
 
-class StartSessionUseCase @Inject constructor(
+class StartSessionUseCase(
     private val repository: TherapySessionRepository,
     private val clock: Clock
 ) {
@@ -217,7 +217,7 @@ class StartSessionUseCase @Inject constructor(
     }
 }
 
-class FinishSessionUseCase @Inject constructor(
+class FinishSessionUseCase(
     private val repository: TherapySessionRepository,
     private val clock: Clock
 ) {
@@ -235,7 +235,7 @@ class FinishSessionUseCase @Inject constructor(
 
         val now = clock.instant()
         val started = details.session.startedAt ?: now
-        val duration = maxOf(details.session.durationSeconds, java.time.Duration.between(started, now).seconds)
+        val duration = maxOf(details.session.durationSeconds, secondsBetween(started, now))
 
         return storageCall {
             repository.updateSessionNotes(sessionId, clinicalNotes, clinicalSummary, now)
@@ -251,7 +251,7 @@ class FinishSessionUseCase @Inject constructor(
     }
 }
 
-class CancelSessionUseCase @Inject constructor(
+class CancelSessionUseCase(
     private val repository: TherapySessionRepository,
     private val clock: Clock
 ) {

@@ -3,7 +3,6 @@ package com.healthcare.fonolab.domain.goal
 import com.healthcare.fonolab.domain.common.DomainError
 import com.healthcare.fonolab.domain.common.DomainResult
 import com.healthcare.fonolab.domain.common.ValidationIssue
-import javax.inject.Inject
 
 enum class GoalField { DESCRIPTION, TARGET_SKILL, CUSTOM_AREA_NAME, ACCURACY, NOTES }
 
@@ -17,7 +16,7 @@ enum class GoalValidationError(val field: GoalField) : ValidationIssue {
     NOTES_TOO_LONG(GoalField.NOTES)
 }
 
-class GoalValidator @Inject constructor() {
+class GoalValidator() {
 
     fun validate(draft: ClinicalGoalDraft): DomainResult<ValidGoalData> {
         val errors = mutableListOf<GoalValidationError>()

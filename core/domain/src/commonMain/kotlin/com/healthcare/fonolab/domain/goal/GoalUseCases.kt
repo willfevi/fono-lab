@@ -1,13 +1,12 @@
 package com.healthcare.fonolab.domain.goal
 
+import com.healthcare.fonolab.domain.datetime.Clock
+import com.healthcare.fonolab.domain.datetime.Instant
 import com.healthcare.fonolab.domain.common.DomainError
 import com.healthcare.fonolab.domain.common.DomainResult
 import com.healthcare.fonolab.domain.common.EntityType
 import com.healthcare.fonolab.domain.common.storageCall
 import kotlinx.coroutines.flow.Flow
-import java.time.Clock
-import java.time.Instant
-import javax.inject.Inject
 
 interface ClinicalGoalRepository {
     fun observeGoalsForPatient(patientId: Long): Flow<List<ClinicalGoal>>
@@ -20,7 +19,7 @@ interface ClinicalGoalRepository {
     suspend fun delete(id: Long)
 }
 
-class SaveGoalUseCase @Inject constructor(
+class SaveGoalUseCase(
     private val repository: ClinicalGoalRepository,
     private val validator: GoalValidator,
     private val clock: Clock
@@ -46,7 +45,7 @@ class SaveGoalUseCase @Inject constructor(
     }
 }
 
-class ChangeGoalStatusUseCase @Inject constructor(
+class ChangeGoalStatusUseCase(
     private val repository: ClinicalGoalRepository,
     private val clock: Clock
 ) {
@@ -58,7 +57,7 @@ class ChangeGoalStatusUseCase @Inject constructor(
     }
 }
 
-class DeleteGoalUseCase @Inject constructor(
+class DeleteGoalUseCase(
     private val repository: ClinicalGoalRepository
 ) {
     suspend operator fun invoke(goalId: Long): DomainResult<Unit> = storageCall {

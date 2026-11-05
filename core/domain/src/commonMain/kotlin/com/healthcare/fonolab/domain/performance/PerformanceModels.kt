@@ -1,6 +1,7 @@
 package com.healthcare.fonolab.domain.performance
 
-import java.time.Instant
+import com.healthcare.fonolab.domain.datetime.Instant
+
 
 /** How the attempt was evaluated. Distinct types never mixed. */
 sealed interface AttemptEvaluation {

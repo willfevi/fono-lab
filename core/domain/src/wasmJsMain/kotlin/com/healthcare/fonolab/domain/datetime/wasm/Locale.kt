@@ -1,4 +1,4 @@
-package java.util
+package com.healthcare.fonolab.domain.datetime.wasm
 
 class Locale(val language: String, val country: String = "") {
     companion object {

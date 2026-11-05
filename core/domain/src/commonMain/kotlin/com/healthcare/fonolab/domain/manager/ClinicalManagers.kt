@@ -39,17 +39,12 @@ import com.healthcare.fonolab.domain.session.TherapySessionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import java.time.Instant
-import java.time.LocalDate
-import javax.inject.Inject
-import javax.inject.Singleton
 
 // ============================================================================
 // 1. PATIENT MANAGER & FORM MANAGER
 // ============================================================================
 
-@Singleton
-class PatientManager @Inject constructor(
+class PatientManager(
     private val repository: PatientRepository,
     private val savePatientUseCase: SavePatientUseCase,
     private val changeStatusUseCase: ChangePatientStatusUseCase,
@@ -90,8 +85,7 @@ class PatientManager @Inject constructor(
         dateTimeManager.calculateAge(patient.birthDate).toFormattedBr()
 }
 
-@Singleton
-class FormManager @Inject constructor(
+class FormManager(
     private val patientValidator: PatientValidator,
     private val dateTimeManager: DateTimeManager
 ) {
@@ -112,8 +106,7 @@ class FormManager @Inject constructor(
 // 2. ANAMNESIS MANAGER (12 SECTIONS, PARTIAL SAVE & VERSIONING)
 // ============================================================================
 
-@Singleton
-class AnamnesisManager @Inject constructor(
+class AnamnesisManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager,
     private val auditManager: AuditManager
@@ -177,8 +170,7 @@ class AnamnesisManager @Inject constructor(
 // 3. ASSESSMENT MANAGER & PHONOLOGY MANAGER
 // ============================================================================
 
-@Singleton
-class AssessmentManager @Inject constructor(
+class AssessmentManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager,
     private val auditManager: AuditManager
@@ -223,8 +215,7 @@ class AssessmentManager @Inject constructor(
     }
 }
 
-@Singleton
-class PhonologyManager @Inject constructor(
+class PhonologyManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager
 ) {
@@ -290,8 +281,7 @@ class PhonologyManager @Inject constructor(
 // 4. THERAPY MANAGER & GENERALIZATION MANAGER
 // ============================================================================
 
-@Singleton
-class TherapyManager @Inject constructor(
+class TherapyManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val goalRepository: ClinicalGoalRepository,
     private val saveGoalUseCase: SaveGoalUseCase,
@@ -362,8 +352,7 @@ class TherapyManager @Inject constructor(
     }
 }
 
-@Singleton
-class GeneralizationManager @Inject constructor(
+class GeneralizationManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager
 ) {
@@ -411,8 +400,7 @@ data class SuggestedSessionActivity(
     val estimatedMinutes: Int
 )
 
-@Singleton
-class SessionManager @Inject constructor(
+class SessionManager(
     private val sessionRepository: TherapySessionRepository,
     private val planSessionUseCase: PlanSessionUseCase,
     private val startPlannedSessionUseCase: StartPlannedSessionUseCase,
@@ -510,8 +498,7 @@ class SessionManager @Inject constructor(
     }
 }
 
-@Singleton
-class SessionPlanningAssistantManager @Inject constructor() {
+class SessionPlanningAssistantManager() {
     /**
      * Suggests therapeutic games and activities aligned with the patient's active clinical goals,
      * keeping final decision authority with the speech-language pathologist.
@@ -604,8 +591,7 @@ class SessionPlanningAssistantManager @Inject constructor() {
 // 6. GAME MANAGER, CLINICAL DATA MANAGER & CONTENT LIBRARY MANAGER
 // ============================================================================
 
-@Singleton
-class GameManager @Inject constructor(
+class GameManager(
     private val sessionRepository: TherapySessionRepository
 ) {
     val supportedGameIds: List<String> = listOf(
@@ -625,8 +611,7 @@ class GameManager @Inject constructor(
         sessionRepository.getAttemptsForPatient(patientId)
 }
 
-@Singleton
-class ClinicalDataManager @Inject constructor() {
+class ClinicalDataManager() {
     /**
      * Separates ludic game points from real clinical trial-by-trial accuracy and cue hierarchy dependency.
      */
@@ -663,8 +648,7 @@ class ClinicalDataManager @Inject constructor() {
         attempts.groupingBy { it.cueLevel }.eachCount()
 }
 
-@Singleton
-class ContentLibraryManager @Inject constructor(
+class ContentLibraryManager(
     private val clinicalRepository: ClinicalPlatformRepository
 ) {
     val builtInStimuli: List<TherapeuticStimulus> = listOf(
@@ -719,8 +703,7 @@ class ContentLibraryManager @Inject constructor(
 // 7. HISTORY MANAGER (LONGITUDINAL TIMELINE WITH FILTERS)
 // ============================================================================
 
-@Singleton
-class HistoryManager @Inject constructor(
+class HistoryManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val sessionRepository: TherapySessionRepository,
     private val dateTimeManager: DateTimeManager
@@ -815,8 +798,7 @@ class HistoryManager @Inject constructor(
 // 8. SCHEDULE MANAGER & REFERRAL MANAGER
 // ============================================================================
 
-@Singleton
-class ScheduleManager @Inject constructor(
+class ScheduleManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager,
     private val auditManager: AuditManager
@@ -860,8 +842,7 @@ class ScheduleManager @Inject constructor(
     }
 }
 
-@Singleton
-class ReferralManager @Inject constructor(
+class ReferralManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager
 ) {
@@ -903,8 +884,7 @@ class ReferralManager @Inject constructor(
 // 9. HOME PRACTICE MANAGER & CAREGIVER MANAGER
 // ============================================================================
 
-@Singleton
-class HomePracticeManager @Inject constructor(
+class HomePracticeManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager
 ) {
@@ -953,8 +933,7 @@ class HomePracticeManager @Inject constructor(
     }
 }
 
-@Singleton
-class CaregiverManager @Inject constructor() {
+class CaregiverManager() {
     fun generateCaregiverOrientationSheet(patientName: String, tasks: List<HomePracticeTask>): String {
         return buildString {
             appendLine("GUIA DE PRÁTICA DOMICILIAR — FONOLAB")
@@ -979,8 +958,7 @@ class CaregiverManager @Inject constructor() {
 // 10. DOCUMENT MANAGER, TEMPLATE MANAGER & DOCUMENTATION ASSISTANT MANAGER
 // ============================================================================
 
-@Singleton
-class DocumentManager @Inject constructor(
+class DocumentManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager,
     private val auditManager: AuditManager
@@ -1049,8 +1027,7 @@ class DocumentManager @Inject constructor(
     }
 }
 
-@Singleton
-class TemplateManager @Inject constructor() {
+class TemplateManager() {
     fun getDocumentTemplateBody(category: DocumentCategory, patientName: String): String = when (category) {
         DocumentCategory.SOAP_EVOLUTION ->
             "Paciente $patientName compareceu à sessão acompanhado(a) pelo responsável, apresentando boa disposição e engajamento lúdico."
@@ -1069,8 +1046,7 @@ class TemplateManager @Inject constructor() {
     }
 }
 
-@Singleton
-class DocumentationAssistantManager @Inject constructor(
+class DocumentationAssistantManager(
     private val clinicalDataManager: ClinicalDataManager
 ) {
     /**
@@ -1092,8 +1068,7 @@ class DocumentationAssistantManager @Inject constructor(
     }
 }
 
-@Singleton
-class ReportManager @Inject constructor(
+class ReportManager(
     private val clinicalDataManager: ClinicalDataManager
 ) {
     fun buildExecutiveMetrics(
@@ -1118,8 +1093,7 @@ class ReportManager @Inject constructor(
 // 11. BILLING MANAGER (BRL, SEPARATED FROM CLINICAL RECORDS)
 // ============================================================================
 
-@Singleton
-class BillingManager @Inject constructor(
+class BillingManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager,
     private val auditManager: AuditManager
@@ -1185,8 +1159,7 @@ data class ClinicalQualityAlert(
     val severity: TaskPriority
 )
 
-@Singleton
-class QualityControlManager @Inject constructor(
+class QualityControlManager(
     private val patientRepository: PatientRepository,
     private val clinicalRepository: ClinicalPlatformRepository,
     private val sessionRepository: TherapySessionRepository
@@ -1248,16 +1221,14 @@ class QualityControlManager @Inject constructor(
     }
 }
 
-@Singleton
-class AccountManager @Inject constructor(
+class AccountManager(
     private val clinicalRepository: ClinicalPlatformRepository
 ) {
     fun observeProfile(): Flow<ProfessionalProfile> = clinicalRepository.observeProfessionalProfile()
     suspend fun saveProfile(profile: ProfessionalProfile) = clinicalRepository.updateProfessionalProfile(profile)
 }
 
-@Singleton
-class AuthManager @Inject constructor() {
+class AuthManager() {
     /**
      * Future-ready authentication contract. Never blocks offline local usage in the current version,
      * while supporting the visual Login / Account preview screen.
@@ -1265,8 +1236,7 @@ class AuthManager @Inject constructor() {
     fun isOfflineModeEnabled(): Boolean = true
 }
 
-@Singleton
-class AccessibilityManager @Inject constructor() {
+class AccessibilityManager() {
     val supportedCommunicationModalities = listOf(
         "Fala oral",
         "Comunicação Alternativa e Aumentativa (CAA)",
@@ -1276,8 +1246,7 @@ class AccessibilityManager @Inject constructor() {
     )
 }
 
-@Singleton
-class LanguageProfileManager @Inject constructor() {
+class LanguageProfileManager() {
     val commonLanguageContexts = listOf(
         "Português Brasileiro (Monolíngue)",
         "Português + Inglês (Bilíngue)",
@@ -1287,8 +1256,7 @@ class LanguageProfileManager @Inject constructor() {
     )
 }
 
-@Singleton
-class CollaborationManager @Inject constructor() {
+class CollaborationManager() {
     val externalSpecialties = listOf(
         "Pediatria",
         "Neuropediatria",
@@ -1300,16 +1268,14 @@ class CollaborationManager @Inject constructor() {
     )
 }
 
-@Singleton
-class SupervisionManager @Inject constructor() {
+class SupervisionManager() {
     fun anonymizePatientName(fullName: String, internalCode: String): String {
         val initials = fullName.split(" ").filter { it.isNotBlank() }.joinToString(".") { it.take(1).uppercase() }
         return "Caso Clínico $initials ($internalCode)"
     }
 }
 
-@Singleton
-class TeamManager @Inject constructor() {
+class TeamManager() {
     val availableRoles = listOf(
         "Administrador Clínico",
         "Fonoaudiólogo(a) Titular",
@@ -1319,8 +1285,7 @@ class TeamManager @Inject constructor() {
     )
 }
 
-@Singleton
-class MediaManager @Inject constructor() {
+class MediaManager() {
     val supportedAttachmentCategories = listOf(
         "Amostra de Fala / Áudio",
         "Foto de Motricidade Orofacial",
@@ -1329,8 +1294,7 @@ class MediaManager @Inject constructor() {
     )
 }
 
-@Singleton
-class EngagementManager @Inject constructor() {
+class EngagementManager() {
     fun calculateStarsForAccuracy(accuracyPercentage: Int): Int = when {
         accuracyPercentage >= 80 -> 3
         accuracyPercentage >= 50 -> 2
@@ -1338,8 +1302,7 @@ class EngagementManager @Inject constructor() {
     }
 }
 
-@Singleton
-class NotificationManager @Inject constructor(
+class NotificationManager(
     private val clinicalRepository: ClinicalPlatformRepository,
     private val dateTimeManager: DateTimeManager
 ) {
@@ -1373,20 +1336,17 @@ class NotificationManager @Inject constructor(
         clinicalRepository.toggleTaskCompleted(taskId, completed)
 }
 
-@Singleton
-class SyncManager @Inject constructor() {
+class SyncManager() {
     fun getSyncStatusSummary(): String =
         "Persistência local Room SQLite ativa (100% offline). Arquitetura preparada para sincronização remota futura."
 }
 
-@Singleton
-class SettingsManager @Inject constructor() {
+class SettingsManager() {
     val defaultSessionDurationMinutes: Int = 50
     val defaultLocaleTag: String = "pt-BR"
 }
 
-@Singleton
-class AuditManager @Inject constructor(
+class AuditManager(
     private val clinicalRepository: ClinicalPlatformRepository
 ) {
     fun observeRecentLogs(limit: Int = 50): Flow<List<AuditEvent>> =

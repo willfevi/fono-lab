@@ -1,16 +1,5 @@
 package com.healthcare.fonolab.domain.datetime
 
-import java.time.Clock
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Period
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.ResolverStyle
-import java.util.Locale
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Multiplatform-ready abstraction for retrieving current date, time, and timezone.
@@ -23,13 +12,13 @@ interface PlatformClock {
     fun zoneId(): ZoneId
 }
 
-class SystemPlatformClock @Inject constructor(
+class SystemPlatformClock(
     private val clock: Clock
 ) : PlatformClock {
     override fun nowInstant(): Instant = clock.instant()
-    override fun today(): LocalDate = LocalDate.now(clock)
-    override fun currentDateTime(): LocalDateTime = LocalDateTime.now(clock)
-    override fun zoneId(): ZoneId = clock.zone
+    override fun today(): LocalDate = currentLocalDate(clock)
+    override fun currentDateTime(): LocalDateTime = localDateTimeAt(clock.instant(), clockZone(clock))
+    override fun zoneId(): ZoneId = clockZone(clock)
 }
 
 data class DetailedAge(
@@ -64,30 +53,25 @@ enum class DateErrorReason {
  * Enforces Brazilian standard formatting (`DD/MM/AAAA` and `DD/MM/AAAA HH:mm`), strict calendar
  * validation (including leap years), safe input masking, age calculation, and persistence conversion.
  */
-@Singleton
-class DateTimeManager @Inject constructor(
+class DateTimeManager(
     private val clock: Clock
 ) {
-    private val ptBrLocale: Locale = Locale.forLanguageTag("pt-BR")
-
     private val strictBrDateFormatter: DateTimeFormatter =
-        DateTimeFormatter.ofPattern("dd/MM/uuuu", ptBrLocale)
-            .withResolverStyle(ResolverStyle.STRICT)
+        dateFormatter("dd/MM/uuuu", strict = true)
 
     private val strictIsoDateFormatter: DateTimeFormatter =
-        DateTimeFormatter.ofPattern("uuuu-MM-dd", ptBrLocale)
-            .withResolverStyle(ResolverStyle.STRICT)
+        dateFormatter("uuuu-MM-dd", strict = true)
 
     private val brDateTimeFormatter: DateTimeFormatter =
-        DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm", ptBrLocale)
+        dateFormatter("dd/MM/uuuu HH:mm")
 
     private val brTimeFormatter: DateTimeFormatter =
-        DateTimeFormatter.ofPattern("HH:mm", ptBrLocale)
+        dateFormatter("HH:mm")
 
     private val brShortHeaderFormatter: DateTimeFormatter =
-        DateTimeFormatter.ofPattern("dd 'de' MMM", ptBrLocale)
+        dateFormatter("dd 'de' MMM")
 
-    fun today(): LocalDate = LocalDate.now(clock)
+    fun today(): LocalDate = currentLocalDate(clock)
 
     fun nowInstant(): Instant = clock.instant()
 
@@ -103,12 +87,12 @@ class DateTimeManager @Inject constructor(
 
     fun formatDateTimeBr(instant: Instant?): String {
         if (instant == null) return ""
-        return LocalDateTime.ofInstant(instant, clock.zone).format(brDateTimeFormatter)
+        return localDateTimeAt(instant, clockZone(clock)).format(brDateTimeFormatter)
     }
 
     fun formatTimeBr(instant: Instant?): String {
         if (instant == null) return ""
-        return LocalDateTime.ofInstant(instant, clock.zone).format(brTimeFormatter)
+        return localDateTimeAt(instant, clockZone(clock)).format(brTimeFormatter)
     }
 
     fun formatHeaderDateBr(date: LocalDate = today()): String {
@@ -124,7 +108,7 @@ class DateTimeManager @Inject constructor(
     fun normalizeBrDateInput(raw: String): String {
         val trimmed = raw.trim()
         if (trimmed.matches(Regex("^\\d{4}-\\d{2}-\\d{2}$"))) {
-            val isoParsed = runCatching { LocalDate.parse(trimmed, strictIsoDateFormatter) }.getOrNull()
+            val isoParsed = runCatching { parseLocalDate(trimmed, strictIsoDateFormatter) }.getOrNull()
             if (isoParsed != null) return formatDateBr(isoParsed)
         }
 
@@ -150,19 +134,19 @@ class DateTimeManager @Inject constructor(
 
         // 1. Standard DD/MM/AAAA
         if (cleaned.matches(Regex("^\\d{2}/\\d{2}/\\d{4}$"))) {
-            return runCatching { LocalDate.parse(cleaned, strictBrDateFormatter) }.getOrNull()
+            return runCatching { parseLocalDate(cleaned, strictBrDateFormatter) }.getOrNull()
         }
 
         // 2. Raw 8 digits DDMMAAAA
         val digitsOnly = cleaned.filter { it.isDigit() }
         if (digitsOnly.length == 8 && !cleaned.contains("-")) {
             val formatted = "${digitsOnly.substring(0, 2)}/${digitsOnly.substring(2, 4)}/${digitsOnly.substring(4, 8)}"
-            return runCatching { LocalDate.parse(formatted, strictBrDateFormatter) }.getOrNull()
+            return runCatching { parseLocalDate(formatted, strictBrDateFormatter) }.getOrNull()
         }
 
         // 3. ISO AAAA-MM-DD fallback
         if (cleaned.matches(Regex("^\\d{4}-\\d{2}-\\d{2}$"))) {
-            return runCatching { LocalDate.parse(cleaned, strictIsoDateFormatter) }.getOrNull()
+            return runCatching { parseLocalDate(cleaned, strictIsoDateFormatter) }.getOrNull()
         }
 
         return null
@@ -250,19 +234,14 @@ class DateTimeManager @Inject constructor(
 
     fun calculateAge(birthDate: LocalDate, referenceDate: LocalDate = today()): DetailedAge {
         if (referenceDate.isBefore(birthDate)) return DetailedAge(0, 0, 0)
-        val period = Period.between(birthDate, referenceDate)
-        return DetailedAge(
-            years = period.years,
-            months = period.months,
-            days = period.days
-        )
+        return dateDifference(birthDate, referenceDate)
     }
 
     fun toStartOfDayInstant(date: LocalDate): Instant =
-        date.atStartOfDay(clock.zone).toInstant()
+        startOfDay(date, clockZone(clock))
 
     fun toLocalDate(instant: Instant): LocalDate =
-        instant.atZone(clock.zone).toLocalDate()
+        localDateAt(instant, clockZone(clock))
 
     fun isWithinPeriod(instant: Instant, startDate: LocalDate?, endDate: LocalDate?): Boolean {
         val date = toLocalDate(instant)

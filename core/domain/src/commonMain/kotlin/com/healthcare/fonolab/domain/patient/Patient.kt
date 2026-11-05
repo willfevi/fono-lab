@@ -1,8 +1,10 @@
 package com.healthcare.fonolab.domain.patient
 
-import java.time.Instant
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.healthcare.fonolab.domain.datetime.dateFormatter
+import com.healthcare.fonolab.domain.datetime.DateTimeFormatter
+import com.healthcare.fonolab.domain.datetime.Instant
+import com.healthcare.fonolab.domain.datetime.LocalDate
+
 
 enum class PatientStatus(val displayName: String) {
     ACTIVE("Ativo"),
@@ -95,7 +97,7 @@ data class ValidPatientData(
     val lowStimulationMode: Boolean = false
 )
 
-private val brFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+private val brFormatter: DateTimeFormatter = dateFormatter("dd/MM/yyyy")
 
 fun Patient.toDraft(): PatientDraft = PatientDraft(
     fullName = fullName,

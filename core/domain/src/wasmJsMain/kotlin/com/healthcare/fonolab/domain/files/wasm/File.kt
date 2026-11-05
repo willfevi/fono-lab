@@ -1,6 +1,6 @@
-package java.io
+package com.healthcare.fonolab.domain.files.wasm
 
-class File {
+open class File {
     val path: String
     val name: String
     val parentFile: File?
@@ -27,9 +27,7 @@ class File {
 
     fun mkdirs(): Boolean = true
 
-    fun writeText(text: String, charset: Any? = null) {
-        println("[WebFile] Simulação de gravação em $path (${text.length} caracteres)")
-    }
+    fun getName(): String = name
 
     override fun toString(): String = path
     override fun equals(other: Any?): Boolean = other is File && other.path == path

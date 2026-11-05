@@ -1,9 +1,8 @@
 package com.healthcare.fonolab.domain.goal
 
+import com.healthcare.fonolab.domain.datetime.Instant
 import com.healthcare.fonolab.domain.common.DifficultyLevel
 import com.healthcare.fonolab.domain.common.PhonemePosition
-import java.time.Instant
-import java.time.LocalDate
 
 enum class GoalStatus { ACTIVE, COMPLETED, PAUSED }
 
