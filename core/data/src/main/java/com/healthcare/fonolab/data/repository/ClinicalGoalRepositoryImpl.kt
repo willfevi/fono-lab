@@ -12,11 +12,8 @@ import com.healthcare.fonolab.domain.goal.ValidGoalData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ClinicalGoalRepositoryImpl @Inject constructor(
+class ClinicalGoalRepositoryImpl(
     private val dao: ClinicalGoalDao
 ) : ClinicalGoalRepository {
 

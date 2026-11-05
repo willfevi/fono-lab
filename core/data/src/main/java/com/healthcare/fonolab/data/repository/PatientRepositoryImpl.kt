@@ -11,11 +11,8 @@ import com.healthcare.fonolab.domain.patient.ValidPatientData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class PatientRepositoryImpl @Inject constructor(
+class PatientRepositoryImpl(
     private val dao: PatientDao
 ) : PatientRepository {
 

@@ -14,11 +14,8 @@ import kotlinx.coroutines.flow.map
 import java.time.Clock
 import java.time.LocalDate
 import java.util.Base64
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ClinicalPlatformRepositoryImpl @Inject constructor(
+class ClinicalPlatformRepositoryImpl(
     private val dao: ClinicalPlatformDao,
     private val clock: Clock
 ) : ClinicalPlatformRepository {

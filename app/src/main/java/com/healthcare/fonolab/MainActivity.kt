@@ -5,15 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.healthcare.fonolab.shared.App
-import dagger.hilt.android.AndroidEntryPoint
+import com.healthcare.fonolab.data.di.androidRoomModule
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val roomModule = androidRoomModule(applicationContext)
         setContent {
-            App()
+            App(platformModule = roomModule)
         }
     }
 }

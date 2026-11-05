@@ -22,11 +22,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import java.time.Instant
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TherapySessionRepositoryImpl @Inject constructor(
+class TherapySessionRepositoryImpl(
     private val sessionDao: TherapySessionDao,
     private val goalDao: ClinicalGoalDao
 ) : TherapySessionRepository {
@@ -39,6 +36,7 @@ class TherapySessionRepositoryImpl @Inject constructor(
         return sessionDao.observeRecent(limit).map { list -> list.map { it.toDomain() } }
     }
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     override fun observeActiveSession(): Flow<SessionWithDetails?> {
         return sessionDao.observeActiveSession().flatMapLatest { entity ->
             if (entity == null) flowOf(null)
@@ -46,6 +44,7 @@ class TherapySessionRepositoryImpl @Inject constructor(
         }
     }
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     override fun observeSession(sessionId: Long): Flow<SessionWithDetails?> {
         return sessionDao.observeById(sessionId).flatMapLatest { sessionEntity ->
             if (sessionEntity == null) return@flatMapLatest flowOf(null)
