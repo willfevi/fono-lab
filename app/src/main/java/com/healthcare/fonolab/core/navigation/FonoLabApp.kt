@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Icon
@@ -63,6 +65,9 @@ fun FonoLabApp(
 
     val destinations = TopLevelDestination.entries
     val currentRoute = currentDestination?.route
+    val isTopLevelDestination = destinations.any { dest ->
+        currentRoute != null && currentRoute.contains(dest.route::class.simpleName ?: "")
+    }
     val selectedIndex = destinations.indexOfFirst { dest ->
         currentRoute?.contains(dest.route::class.simpleName ?: "") == true
     }.let { if (it >= 0) it else 0 }
@@ -78,28 +83,32 @@ fun FonoLabApp(
         }
     }
 
+    val insetsWithoutIme = WindowInsets.safeDrawing.exclude(WindowInsets.ime)
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(MockupBackground)
-            .padding(WindowInsets.safeDrawing.asPaddingValues())
+            .padding(insetsWithoutIme.asPaddingValues())
     ) {
         val isTabletOrDesktop = maxWidth >= 600.dp
 
         if (isTabletOrDesktop) {
             // Adaptive Medium/Expanded Layout (Tablet & Desktop NavigationRail)
             Row(modifier = Modifier.fillMaxSize()) {
-                NavigationRail(
-                    containerColor = MockupSurface,
-                    modifier = Modifier.fillMaxHeight()
-                ) {
-                    destinations.forEachIndexed { idx, dest ->
-                        NavigationRailItem(
-                            selected = selectedIndex == idx,
-                            onClick = { onSelectDestination(idx) },
-                            icon = { Icon(dest.icon, contentDescription = dest.title) },
-                            label = { Text(dest.title) }
-                        )
+                if (isTopLevelDestination) {
+                    NavigationRail(
+                        containerColor = MockupSurface,
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
+                        destinations.forEachIndexed { idx, dest ->
+                            NavigationRailItem(
+                                selected = selectedIndex == idx,
+                                onClick = { onSelectDestination(idx) },
+                                icon = { Icon(dest.icon, contentDescription = dest.title) },
+                                label = { Text(dest.title) }
+                            )
+                        }
                     }
                 }
                 FonoLabNavHost(
@@ -116,15 +125,20 @@ fun FonoLabApp(
                     navController = navController,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 80.dp)
+                        .then(
+                            if (isTopLevelDestination) Modifier.padding(bottom = 80.dp)
+                            else Modifier
+                        )
                 )
 
-                MockupFloatingNavBar(
-                    items = destinations.map { it.icon to it.title },
-                    selectedIndex = selectedIndex,
-                    onItemSelected = onSelectDestination,
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                )
+                if (isTopLevelDestination) {
+                    MockupFloatingNavBar(
+                        items = destinations.map { it.icon to it.title },
+                        selectedIndex = selectedIndex,
+                        onItemSelected = onSelectDestination,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                }
             }
         }
     }

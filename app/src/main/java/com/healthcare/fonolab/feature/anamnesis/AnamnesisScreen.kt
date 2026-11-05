@@ -211,6 +211,7 @@ fun AnamnesisScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MockupBackground,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
@@ -274,6 +275,7 @@ fun AnamnesisScreen(
                         Icon(Icons.Default.PictureAsPdf, contentDescription = "Exportar PDF", tint = MockupDarkPill)
                     }
                 },
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MockupBackground)
             )
         }
@@ -289,6 +291,7 @@ fun AnamnesisScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .imePadding()
                 .padding(horizontal = 20.dp),
             contentPadding = PaddingValues(bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)

@@ -82,6 +82,7 @@ fun PatientDetailsScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MockupBackground,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
@@ -169,6 +170,7 @@ fun PatientDetailsScreen(
                         }
                     }
                 },
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MockupBackground)
             )
         }
