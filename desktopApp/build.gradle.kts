@@ -39,6 +39,16 @@ compose.desktop {
         if (jdk17.exists()) {
             javaHome = jdk17.absolutePath
         }
+        jvmArgs(
+            "-Dsun.java2d.uiScale.enabled=true",
+            "-Dsun.java2d.dpiaware=true",
+            "-Dawt.useSystemAAFontSettings=lcd",
+            "-Dswing.aatext=true",
+            "-Dprism.lcdtext=true",
+            "-Dskiko.renderApi=DIRECT3D",
+            "-Dskiko.win.directx.vsync=true",
+            "-Dsun.java2d.d3d=true"
+        )
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Msi, TargetFormat.AppImage)
             packageName = "FonoLab"
