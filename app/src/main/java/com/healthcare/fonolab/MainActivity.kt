@@ -4,8 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.healthcare.fonolab.core.designsystem.theme.FonoLabTheme
-import com.healthcare.fonolab.core.navigation.FonoLabApp
+import com.healthcare.fonolab.shared.App
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -14,9 +13,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            FonoLabTheme {
-                FonoLabApp()
-            }
+            App()
         }
     }
 }
